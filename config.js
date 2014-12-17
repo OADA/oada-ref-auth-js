@@ -21,9 +21,9 @@ module.exports = {
   server: {
     jsonSpaces: 2,
     sessionSecret: 'Xka*32F@*!15',
-    port: 3000,
-    httpMode: true,
-    root: 'https://identity.oada-dev.com'
+    port: 443,
+    httpMode: false,
+    root: 'https://identity.oada-dev.com',
   },
   endpoints: {
     authorize: '/auth',
@@ -54,11 +54,13 @@ module.exports = {
   },
   idToken: {
     expiresIn: 3600,
+    signKid: 'kjcScjc32dwJXXLJDs3r124sa1',
   },
   certs: {
     key: fs.readFileSync(path.join(__dirname, 'certs/ssl/key.pem')),
     cert: fs.readFileSync(path.join(__dirname, 'certs/ssl/cert.crt')),
-    sign: require('./certs/sign/sign.private'),
-    signJwk: require('./certs/sign/sign'),
+  },
+  keys: {
+    signPems: path.join(__dirname, 'certs/sign/'),
   }
 };
