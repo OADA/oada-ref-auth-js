@@ -32,6 +32,7 @@ var wkj = require('well-known-json')();
 
 var config = require('./config');
 var clients = require('./db/clients');
+var keys = require('./keys');
 require('./auth');
 
 var app = express();
@@ -104,7 +105,7 @@ if(config.oidc.enable) {
   require('./oidc')(server);
 
   app.get(config.endpoints.certs, require('cors')(), function(req, res) {
-    res.json(config.certs.signJwk);
+    res.json(keys.jwks);
   });
 
   app.get(config.endpoints.userinfo, require('cors')(),

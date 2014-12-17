@@ -24,6 +24,7 @@ require('jws-jwk').shim();
 var tokens = require('./db/tokens');
 var codes = require('./db/codes');
 
+var keys = require('./keys');
 var config = require('./config');
 
 function makeHash(length) {
@@ -37,7 +38,7 @@ function makeHash(length) {
 
 function createIdToken(aud, sub, nonce) {
   var options = {
-    algorithm: config.certs.signJwk.keys[0].alg,
+    algorithm: keys.sign[config.idToken.signKid].alg,
     expiresInMinutes: config.idToken.expiresIn/60,
     audience: aud,
     subject: sub,
@@ -52,7 +53,7 @@ function createIdToken(aud, sub, nonce) {
     payload.nonce = nonce;
   }
 
-  return jwt.sign(payload, config.certs.sign.keys[0], options);
+  return jwt.sign(payload, keys.sign[config.idToken.signKid], options);
 }
 
 function createToken(scope, user, clientId, done) {
