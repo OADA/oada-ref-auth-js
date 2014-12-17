@@ -37,5 +37,4 @@ module.exports = function(server) {
   // Hybrid flow (code id_token token)
   server.grant(oauth2orizeOpenId.grant.codeIdTokenToken(utils.issueToken,
         utils.issueCode, utils.issueIdToken));
-}
-
+};

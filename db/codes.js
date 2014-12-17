@@ -34,7 +34,7 @@ var codes = {
 var URI = require('URIjs');
 
 function makeCode(code) {
-  if(codes[code] === undefined) {
+  if (codes[code] === undefined) {
     return false;
   }
 
@@ -42,26 +42,26 @@ function makeCode(code) {
 
   c.isExpired = function() {
     return (this.createTime + this.expiresIn > new Date().getTime());
-  }
+  };
 
   c.matchesClientId = function(clientId) {
     return this.clientId === clientId;
-  }
+  };
 
   c.matchesRedirectUri = function(redirectUri) {
     return URI(this.redirectUri).equals(redirectUri);
-  }
+  };
 
   c.isRedeemed = function() {
     return this.redeemed;
-  }
+  };
 
   c.redeem = function() {
     return (this.redeemed = true);
-  }
+  };
 
   return c;
-};
+}
 
 module.exports.lookup = function(code, cb) {
   cb(null, makeCode(code));
@@ -70,27 +70,27 @@ module.exports.lookup = function(code, cb) {
 module.exports.save = function(code, cb) {
   code.scope = code.scope || [];
 
-  if(typeof code.code !== 'string' ||
+  if (typeof code.code !== 'string' ||
      !Array.isArray(code.scope) ||
      typeof code.user !== 'object' ||
      typeof code.clientId != 'string' ||
      typeof code.redirectUri != 'string') {
-       return cb(new Error('Invalid code'));
+    return cb(new Error('Invalid code'));
   }
 
-  if(codes[code.code] !== undefined) {
+  if (codes[code.code] !== undefined) {
     return cb(new Error('Code already exists'));
   }
 
-  if(typeof code.expiresIn !== 'number') {
+  if (typeof code.expiresIn !== 'number') {
     code.expiresIn = 60;
   }
 
-  code.id = Object.keys(codes).length+1;
+  code.id = Object.keys(codes).length + 1;
   code.createTime = new Date().getTime();
   code.redeemed = false;
 
   codes[code.code] = JSON.parse(JSON.stringify(code));
 
   cb(null, makeCode(code.code));
-}
+};

@@ -17,6 +17,7 @@
 var URI = require('URIjs');
 var login = require('connect-ensure-login');
 var oauth2orize = require('oauth2orize');
+var AuthorizationError = require('oauth2orize').AuthorizationError;
 var passport = require('passport');
 
 var oadaLookup = require('oada-lookup');
@@ -73,9 +74,9 @@ module.exports = function(_server) {
           return (req.oauth2.req.scope.indexOf(el) != -1);
         });
 
-        if(!validScope) {
-          return done(new AuthorizationError('Scope does not match orignal request',
-              'invalid_scope'));
+        if (!validScope) {
+          return done(new AuthorizationError('Scope does not match orignal ' +
+              'request', 'invalid_scope'));
         }
 
         done(null, {
@@ -91,5 +92,5 @@ module.exports = function(_server) {
       server.token(),
       server.errorHandler({mode: 'direct'})
     ]
-  }
-}
+  };
+};

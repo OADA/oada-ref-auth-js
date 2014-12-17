@@ -16,7 +16,6 @@
 
 var crypto = require('crypto');
 
-var debug = require('debug')('a');
 var TokenError = require('oauth2orize').TokenError;
 var jwt = require('jsonwebtoken');
 require('jws-jwk').shim();
@@ -39,7 +38,7 @@ function makeHash(length) {
 function createIdToken(aud, sub, nonce) {
   var options = {
     algorithm: keys.sign[config.idToken.signKid].alg,
-    expiresInMinutes: config.idToken.expiresIn/60,
+    expiresInMinutes: config.idToken.expiresIn / 60,
     audience: aud,
     subject: sub,
     issuer: config.server.root
@@ -47,9 +46,9 @@ function createIdToken(aud, sub, nonce) {
 
   var payload = {
     iat: new Date().getTime()
-  }
+  };
 
-  if(nonce !== undefined) {
+  if (nonce !== undefined) {
     payload.nonce = nonce;
   }
 
@@ -70,9 +69,9 @@ function createToken(scope, user, clientId, done) {
 
 function issueToken(client, user, ares, done) {
   createToken(ares.scope, user, client.clientId, function(err, token) {
-    if(err) { return done(err); }
+    if (err) { return done(err); }
 
-    done(null, token.token, {expires_in: token.expiresIn});
+    done(null, token.token, {'expires_in': token.expiresIn});
   });
 }
 
@@ -92,7 +91,7 @@ function issueCode(client, redirectUri, user, ares, done) {
   };
 
   codes.save(c, function(err, code) {
-    if(err) { return done(err); }
+    if (err) { return done(err); }
 
     done(null, code.code);
   });
@@ -100,20 +99,20 @@ function issueCode(client, redirectUri, user, ares, done) {
 
 function issueTokenFromCode(client, code, redirectUri, done) {
   codes.lookup(code, function(err, code) {
-    if(err) { return done(err); }
+    if (err) { return done(err); }
 
-    if(code.isRedeemed()) {
+    if (code.isRedeemed()) {
       return done(new TokenError('Code already redeemed',
                                  'invalid_request'));
     }
-    if(code.isExpired()) {
+    if (code.isExpired()) {
       return done(new TokenError('Code expired', 'invalid_request'));
     }
-    if(!code.matchesClientId(client.clientId)) {
+    if (!code.matchesClientId(client.clientId)) {
       return done(new TokenError('Client ID does not match orignal request',
                                  'invalid_client'));
     }
-    if(!code.matchesRedirectUri(redirectUri)) {
+    if (!code.matchesRedirectUri(redirectUri)) {
       return done(new TokenError('Redirect URI does not match orignal request',
                                  'invalid_request'));
     }
@@ -122,10 +121,10 @@ function issueTokenFromCode(client, code, redirectUri, done) {
 
     createToken(code.scope, code.user, code.clientId, function(err, token) {
       var extras = {
-        expires_in: token.expiresIn
+        'expires_in': token.expiresIn
       };
 
-      if(code.scope.indexOf('openid') != -1) {
+      if (code.scope.indexOf('openid') != -1) {
         extras['id_token'] = createIdToken(code.clientId, code.user.id,
           code.nonce);
       }
@@ -133,7 +132,7 @@ function issueTokenFromCode(client, code, redirectUri, done) {
       done(null, token.token, extras);
     });
   });
-};
+}
 
 module.exports.issueToken = issueToken;
 module.exports.issueCode = issueCode;

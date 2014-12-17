@@ -31,9 +31,9 @@ var tokens = require('./db/tokens');
 // LocalStrategy is used for the /login screen
 passport.use(new LocalStrategy.Strategy(function(username, password, done) {
   users.findByUsername(username, function(err, user) {
-    if(err) { return done(err); }
-    if(!user) { return done(null, false); }
-    if(user.password != password) { return done(null, false); }
+    if (err) { return done(err); }
+    if (!user) { return done(null, false); }
+    if (user.password != password) { return done(null, false); }
 
     return done(null, user);
   });
@@ -55,18 +55,18 @@ passport.use(new ClientPassword.Strategy({
   },
   function(req, cId, cSecret, done) {
     codes.lookup(req.body.code, function(err, code) {
-      if(err) { return done(err); }
+      if (err) { return done(err); }
 
-      if(code.isRedeemed()) {
+      if (code.isRedeemed()) {
         return done(null, false);
       }
 
       clientSecret.verify(cId, cSecret, code,
         config.server.root + config.endpoints.token,
         function(err, valid) {
-          if(err) { return done(err); }
+          if (err) { return done(err); }
 
-          if(!valid) {
+          if (!valid) {
             return done(null, valid);
           }
 
@@ -82,8 +82,8 @@ passport.use(new ClientPassword.Strategy({
 // BearerStrategy used to protect userinfo endpoint
 passport.use(new BearerStrategy(function(token, done) {
   tokens.lookup(token, function(err, t) {
-    if(err) { return done(err); }
-    if(!t) { return done(null, false); }
+    if (err) { return done(err); }
+    if (!t) { return done(null, false); }
 
     done(null, t.user, {scope: t.scope});
   });

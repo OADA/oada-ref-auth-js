@@ -27,10 +27,8 @@ var tokens = {
   */
 };
 
-var URI = require('URIjs');
-
 function makeToken(token) {
-  if(tokens[token] === undefined) {
+  if (tokens[token] === undefined) {
     return false;
   }
 
@@ -38,7 +36,7 @@ function makeToken(token) {
 
   t.isExpired = function() {
     return (this.createTime + this.expiresIn < new Date().getTime());
-  }
+  };
 
   return t;
 }
@@ -50,25 +48,23 @@ module.exports.lookup = function(token, cb) {
 module.exports.save = function(token, cb) {
   token.scope = token.scope || [];
 
-  if(typeof token.token !== 'string' ||
-     !Array.isArray(token.scope) ||
-     typeof token.user !== 'object' ||
-     typeof token.clientId != 'string') {
-       return cb(new Error('Invalid token'));
+  if (typeof token.token !== 'string' || !Array.isArray(token.scope) ||
+     typeof token.user !== 'object' || typeof token.clientId != 'string') {
+    return cb(new Error('Invalid token'));
   }
 
-  if(tokens[token.token] !== undefined) {
+  if (tokens[token.token] !== undefined) {
     return cb(new Error('Token already exists'));
   }
 
-  if(typeof token.expiresIn !== 'number') {
+  if (typeof token.expiresIn !== 'number') {
     token.expiresIn = 60;
   }
 
-  token.id = Object.keys(tokens).length+1;
+  token.id = Object.keys(tokens).length + 1;
   token.createTime = new Date().getTime();
 
   tokens[token.token] = JSON.parse(JSON.stringify(token));
 
   cb(null, makeToken(token.token));
-}
+};

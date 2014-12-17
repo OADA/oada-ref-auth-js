@@ -15,30 +15,32 @@
 'use strict';
 
 var clients = {
-  "3klaxu838akahf38acucaix73@identity.oada-dev.com": {
-    "clientId": "3klaxu838akahf38acucaix73@identity.oada-dev.com",
-    "name": "OADA Reference Implementation",
-    "redirectUrls": [
-      "http://client.oada-dev.com/redirect",
-      "http://client.oada-dev.com/redirect.html",
+  '3klaxu838akahf38acucaix73@identity.oada-dev.com': {
+    'clientId': '3klaxu838akahf38acucaix73@identity.oada-dev.com',
+    'name': 'OADA Reference Implementation',
+    'redirectUrls': [
+      'http://client.oada-dev.com/redirect',
+      'http://client.oada-dev.com/redirect.html',
     ],
-    "licenses": [
-      "OADA"
+    'licenses': [
+      'OADA'
     ],
-    "puc": "https://identity.oada-dev.com/puc.html",
-    "keys": [{
-      "kty": "RSA",
-      "use": "sig",
-      "alg": "RS256",
-      "kid": "nc63dhaSdd82w32udx6v",
-      "n": "AKj8uuRIHMaq-EJVf2d1QoB1DSvFvYQ3Xa1gvVxaXgxDiF9-Dh7bO5f0VotrYD05MqvY9X_zxF_ioceCh3_rwjNFVRxNnnIfGx8ooOO-1f4SZkHE-mbhFOe0WFXJqt5PPSL5ZRYbmZKGUrQWvRRy_KwBHZDzD51b0-rCjlqiFh6N",
-      "e": "AQAB"
+    'puc': 'https://identity.oada-dev.com/puc.html',
+    'keys': [{
+      'kty': 'RSA',
+      'use': 'sig',
+      'alg': 'RS256',
+      'kid': 'nc63dhaSdd82w32udx6v',
+      'n': 'AKj8uuRIHMaq-EJVf2d1QoB1DSvFvYQ3Xa1gvVxaXgxDiF9-Dh7bO5f0VotrYD05M' +
+           'qvY9X_zxF_ioceCh3_rwjNFVRxNnnIfGx8ooOO-1f4SZkHE-mbhFOe0WFXJqt5PPS' +
+           'L5ZRYbmZKGUrQWvRRy_KwBHZDzD51b0-rCjlqiFh6N',
+      'e': 'AQAB'
     }]
   }
-}
+};
 
 module.exports.lookup = function(id, cb) {
-  if(clients[id]) {
+  if (clients[id]) {
     cb(null, clients[id]);
   } else {
     cb(null);

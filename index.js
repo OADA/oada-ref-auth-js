@@ -63,7 +63,7 @@ server.deserializeClient(function(id, done) {
 //////
 // UI
 //////
-if(config.oauth2.enable || config.oidc.enable) {
+if (config.oauth2.enable || config.oidc.enable) {
   var oauth2 = require('./oauth2')(server);
 
   app.get(config.endpoints.authorize, oauth2.authorize);
@@ -90,18 +90,18 @@ if(config.oauth2.enable || config.oidc.enable) {
 //////
 // OAuth 2.0
 //////
-if(config.oauth2.enable) {
+if (config.oauth2.enable) {
   wkj.addResource('oada-configuration', {
-    "authorization_endpoint": './' + config.endpoints.authorize,
-    "token_endpoint": './' + config.endpoints.token,
-    "OADABaseUri": config.server.root
+    'authorization_endpoint': './' + config.endpoints.authorize,
+    'token_endpoint': './' + config.endpoints.token,
+    'OADABaseUri': config.server.root
   });
 }
 
 //////
 // OIDC
 //////
-if(config.oidc.enable) {
+if (config.oidc.enable) {
   require('./oidc')(server);
 
   app.get(config.endpoints.certs, require('cors')(), function(req, res) {
@@ -111,15 +111,15 @@ if(config.oidc.enable) {
   app.get(config.endpoints.userinfo, require('cors')(),
       passport.authenticate('bearer', {session:false}),
       function(req, res) {
-        if(req.authInfo.scope.indexOf('profile') != -1) {
+        if (req.authInfo.scope.indexOf('profile') != -1) {
           res.json({
-            sub: req.user.id,
-            name: req.user.name,
-            family_name: req.user.family_name,
-            given_name: req.user.given_name,
-            middle_name: req.user.middle_name,
-            nickname: req.user.nickname,
-            preferred_username: req.user.username
+            'sub': req.user.id,
+            'name': req.user.name,
+            'family_name': req.user['family_name'],
+            'given_name': req.user['given_name'],
+            'middle_name': req.user['middle_name'],
+            'nickname': req.user.nickname,
+            'preferred_username': req.user.username
           });
         } else {
           res.status(401).end('Unauthorized');
@@ -156,12 +156,12 @@ if(config.oidc.enable) {
 /////
 // Client Discovery
 /////
-if(config.clientDiscovery.enable) {
+if (config.clientDiscovery.enable) {
   app.get(config.endpoints.clientDiscovery, clientDiscovery(clients.lookup));
   wkj.addResource('oada-configuration', {
     'clientDiscovery': './' + config.endpoints.clientDiscovery,
   });
-};
+}
 
 /////
 // .well-known
@@ -173,7 +173,7 @@ app.use(wkj);
 /////
 app.use(oadaError());
 
-if(config.server.httpMode) {
+if (config.server.httpMode) {
   var server = app.listen(process.env.PORT || config.server.port, function() {
     console.log('Listening HTTP on port %d', server.address().port);
   });

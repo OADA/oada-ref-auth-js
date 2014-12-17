@@ -29,8 +29,8 @@ var users = [
 ];
 
 module.exports.findById = function(id, cb) {
-  for(var idx in users) {
-    if(users[idx].id == id) {
+  for (var idx in users) {
+    if (users[idx].id == id) {
       return cb(null, users[idx]);
     }
   }
@@ -39,8 +39,8 @@ module.exports.findById = function(id, cb) {
 };
 
 module.exports.findByUsername = function(username, cb) {
-  for(var idx in users) {
-    if(users[idx].username == username) {
+  for (var idx in users) {
+    if (users[idx].username == username) {
       return cb(null, users[idx]);
     }
   }
