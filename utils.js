@@ -22,8 +22,8 @@ require('jws-jwk').shim();
 var objectAssign = require('object-assign');
 
 var config = require('./config');
-var tokens = require(config.datastores.tokens);
-var codes = require(config.datastores.codes);
+var tokens = require('./db/models/token');
+var codes = require('./db/models/code');
 var keys = require('./keys');
 
 function makeHash(length) {
@@ -164,7 +164,7 @@ function issueCode(client, redirectUri, user, ares, done) {
 }
 
 function issueTokenFromCode(client, c, redirectUri, done) {
-  codes.lookup(c, function(err, code) {
+  codes.findByCode(c, function(err, code) {
     if (err) { return done(err); }
 
     if (code.isRedeemed()) {

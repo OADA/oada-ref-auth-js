@@ -14,7 +14,42 @@
  */
 'use strict';
 
-// No model needed (yet)
-module.exports = function(user) {
+var debug = require('debug')('model-user');
+
+var config = require('../../config');
+var db = require('../../' + config.datastores.users);
+
+function makeUser(user) {
+  // No model needed (yet)
   return user;
+}
+
+function findById(id, cb) {
+  db.findById(id, function(err, u) {
+    if (err) { debug(err); }
+    var user;
+    if (!err) {
+      user = makeUser(u);
+    }
+
+    cb(err, user);
+  });
+}
+
+function findByUsernamePassword(username, password, cb) {
+  db.findByUsernamePassword(username, password, function(err, u) {
+    if (u) { debug(u); }
+
+    var user;
+    if (!err) {
+      user = makeUser(u);
+    }
+
+    cb(err, user);
+  });
+}
+
+module.exports = {
+  findById: findById,
+  findByUsernamePassword: findByUsernamePassword,
 };

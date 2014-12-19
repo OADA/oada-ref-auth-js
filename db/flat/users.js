@@ -16,24 +16,27 @@
 
 var users = require('./users.json');
 
-var userModel = require('../models/user');
-
-module.exports.findById = function(id, cb) {
+function findById(id, cb) {
   for (var idx in users) {
     if (users[idx].id == id) {
-      return cb(null, userModel(users[idx]));
+      return cb(null, users[idx]);
     }
   }
 
   cb(null, false);
-};
+}
 
-module.exports.findByUsernamePassword = function(username, password, cb) {
+function findByUsernamePassword(username, password, cb) {
   for (var idx in users) {
     if (users[idx].username == username && users[idx].password == password) {
-      return cb(null, userModel(users[idx]));
+      return cb(null, users[idx]);
     }
   }
 
   cb(null, false);
+}
+
+module.exports = {
+  findById: findById,
+  findByUsernamePassword: findByUsernamePassword,
 };

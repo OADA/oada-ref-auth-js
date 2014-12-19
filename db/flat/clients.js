@@ -16,12 +16,14 @@
 
 var clients = require('./clients.json');
 
-var clientModel = require('../models/client');
-
-module.exports.lookup = function(id, cb) {
+function findById(id, cb) {
   if (clients[id]) {
-    cb(null, clientModel(clients[id]));
+    cb(null, clients[id]);
   } else {
     cb(null);
   }
+}
+
+module.exports = {
+  findById: findById,
 };

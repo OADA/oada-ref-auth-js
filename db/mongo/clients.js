@@ -14,17 +14,14 @@
  */
 'use strict';
 
-var debug = require('debug')('mongo-clients');
 var db = require('./mongo.js');
 
-var clientModel = require('../models/client');
-
-function lookup(id, cb) {
+function findById(id, cb) {
   db.clients.findOne({clientId: id}, {_id: 0}, function(err, client) {
-    if (err) { debug(err); }
+    if (err) { return cb(err); }
 
     if (client) {
-      cb(null, clientModel(client));
+      cb(null, client);
     } else {
       cb(err);
     }
@@ -32,5 +29,5 @@ function lookup(id, cb) {
 }
 
 module.exports = {
-  lookup: lookup
+  findById: findById
 };

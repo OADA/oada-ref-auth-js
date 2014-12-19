@@ -16,44 +16,17 @@
 
 var tokens = require('./tokens.json');
 
-var tokenModel = require('../models/token');
-
-function lookup(token, cb) {
-  cb(null, tokenModel(token));
+function findByToken(token, cb) {
+  cb(null, tokens[token]);
 }
 
-function save(t, cb) {
-  var token;
-
-  if (t.isValid === undefined) {
-    token = tokenModel(t);
-  } else {
-    token = t;
-  }
-
-  token.scope = token.scope || [];
-
-  if (!token.isValid()) {
-    return cb(new Error('Invalid token'));
-  }
-
-  if (tokens[token.token] !== undefined) {
-    return cb(new Error('Token already exists'));
-  }
-
-  if (typeof token.expiresIn !== 'number') {
-    token.expiresIn = 60;
-  }
-
-  token.id = Object.keys(tokens).length + 1;
-  token.createTime = new Date().getTime();
-
+function save(token, cb) {
   tokens[token.token] = JSON.parse(JSON.stringify(token));
 
-  cb(null, tokenModel(token));
+  findByToken(token.token, cb);
 }
 
 module.exports = {
-  lookup: lookup,
+  findByToken: findByToken,
   save: save,
 };

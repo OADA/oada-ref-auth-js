@@ -14,76 +14,43 @@
  */
 'use strict';
 
-var debug = require('debug')('mongo-codes');
 var db = require('./mongo.js');
+var users = require('../models/user');
 
-var codeModel = require('../models/code');
-
-var config = require('../../config');
-var users = require('../../' + config.datastores.users);
-
-function lookup(code, cb) {
+function findByCode(code, cb) {
   db.codes.findOne({code: code}, function(err, code) {
-    if (err) { debug(err); }
+    if (err) { return cb(err); }
 
     if (code) {
+      // Rename mongo's _id
       code.id = code._id;
 
       // Populate user
       users.findById(code.user._id, function(err, user) {
-        if (err) { debug(err); return cb(err); }
+        if (err) { return cb(err); }
 
         code.user = user;
 
-        cb(null, codeModel(code));
+        cb(null, code);
       });
     } else {
-      cb(err);
+      cb(null);
     }
   });
 }
 
-function save(c, cb) {
-  var code;
+function save(code, cb) {
+  // Link user
+  code.user = {_id: code.user._id};
 
-  if (c.isValid === undefined) {
-    code = codeModel(c);
-  } else {
-    code = c;
-  }
+  db.codes.save(code, function(err) {
+    if (err) { return cb(err); }
 
-  code.scope = code.scope || [];
-
-  if (!code.isValid()) {
-    return cb(new Error('Invalid code'));
-  }
-
-  lookup(code.code, function(err, c) {
-    if (err) { debug(err); return cb(err); }
-
-    if (c) {
-      return cb(new Error('Code already exists'));
-    }
-
-    if (typeof code.expiresIn !== 'number') {
-      code.expiresIn = 60;
-    }
-
-    code.createTime = new Date().getTime();
-    code.redeemed = false;
-
-    // Link user
-    code.user = {_id: code.user._id};
-
-    db.codes.save(code, function(err) {
-      if (err) { debug(err); return cb(err); }
-
-      lookup(code.code, cb);
-    });
+    findByCode(code.code, cb);
   });
 }
 
 module.exports = {
-  lookup: lookup,
-  save: save
+  findByCode: findByCode,
+  save: save,
 };

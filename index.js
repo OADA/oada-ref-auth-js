@@ -31,7 +31,7 @@ var clientDiscovery = require('oada-client-discovery');
 var wkj = require('well-known-json')();
 
 var config = require('./config');
-var clients = require(config.datastores.clients);
+var clients = require('./db/models/client');
 var keys = require('./keys');
 var utils = require('./utils');
 require('./auth');
@@ -156,7 +156,7 @@ if (config.oidc.enable) {
 // Client Discovery
 /////
 if (config.clientDiscovery.enable) {
-  app.get(config.endpoints.clientDiscovery, clientDiscovery(clients.lookup));
+  app.get(config.endpoints.clientDiscovery, clientDiscovery(clients.findById));
   wkj.addResource('oada-client-discovery', {
     'client_discovery': './' + config.endpoints.clientDiscovery,
   });

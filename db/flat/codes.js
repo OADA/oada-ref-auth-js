@@ -16,45 +16,17 @@
 
 var codes = require('./codes.json');
 
-var codeModel = require('../models/code');
-
-function lookup(code, cb) {
-  cb(null, codeModel(codes[code]));
+function findByCode(code, cb) {
+  cb(null, codes[code]);
 }
 
-function save(c, cb) {
-  var code;
-
-  if (c.isValid === undefined) {
-    code = codeModel(c);
-  } else {
-    code = c;
-  }
-
-  code.scope = code.scope || [];
-
-  if (!code.isValid()) {
-    return cb(new Error('Invalid code'));
-  }
-
-  if (codes[code.code] !== undefined) {
-    return cb(new Error('Code already exists'));
-  }
-
-  if (typeof code.expiresIn !== 'number') {
-    code.expiresIn = 60;
-  }
-
-  code.id = Object.keys(codes).length + 1;
-  code.createTime = new Date().getTime();
-  code.redeemed = false;
-
+function save(code, cb) {
   codes[code.code] = JSON.parse(JSON.stringify(code));
 
-  cb(null, codeModel(code));
+  findByCode(code.code, cb);
 }
 
 module.exports = {
-  lookup: lookup,
+  findByCode: findByCode,
   save: save,
 };

@@ -14,7 +14,13 @@
  */
 'use strict';
 
-module.exports = function(token) {
+var debug = require('debug')('model-tokens');
+
+var OADAError = require('oada-error');
+var config = require('../../config');
+var db = require('../../' + config.datastores.tokens);
+
+function makeToken(token) {
   token.isValid = function() {
     if (typeof token.token !== 'string' || !Array.isArray(token.scope) ||
         typeof token.user !== 'object' || typeof token.clientId != 'string') {
@@ -29,4 +35,58 @@ module.exports = function(token) {
   };
 
   return token;
+}
+
+function findByToken(token, cb) {
+  db.findByToken(token, function(err, t) {
+    var token;
+    if (t) {
+      token = makeToken(t);
+    }
+
+    cb(err, token);
+  });
+}
+
+function save(t, cb) {
+  var token;
+
+  if (t.isValid === undefined) {
+    token = makeToken(t);
+  } else {
+    token = t;
+  }
+
+  token.scope = token.scope || [];
+
+  if (!token.isValid()) {
+    return cb(new Error('Invalid token'));
+  }
+
+  findByToken(token.token, function(err, t) {
+    if (err) { debug(err); return cb(err); }
+
+    if (t) {
+      return cb(new OADAError('Token already exists',
+                              OADAError.codes.BAD_REQUEST,
+                              'There was a problem login in'));
+    }
+
+    if (typeof token.expiresIn !== 'number') {
+      token.expiresIn = 60;
+    }
+
+    token.createTime = new Date().getTime();
+
+    db.save(token, function(err) {
+      if (err) { debug(err); return cb(err); }
+
+      findByToken(token.token, cb);
+    });
+  });
+}
+
+module.exports = {
+  findByToken: findByToken,
+  save: save
 };

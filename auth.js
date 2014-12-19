@@ -23,10 +23,10 @@ var clientSecret = require('oada-client-secret');
 
 var config = require('./config');
 
-var users = require(config.datastores.users);
-var codes = require(config.datastores.codes);
-var clients = require(config.datastores.clients);
-var tokens = require(config.datastores.tokens);
+var users = require('./db/models/user');
+var codes = require('./db/models/code');
+var clients = require('./db/models/client');
+var tokens = require('./db/models/token');
 
 // LocalStrategy is used for the /login screen
 passport.use(new LocalStrategy.Strategy(function(username, password, done) {
@@ -53,7 +53,7 @@ passport.use(new ClientPassword.Strategy({
     passReqToCallback: true
   },
   function(req, cId, cSecret, done) {
-    codes.lookup(req.body.code, function(err, code) {
+    codes.findByCode(req.body.code, function(err, code) {
       if (err) { return done(err); }
 
       if (code.isRedeemed()) {
@@ -69,7 +69,7 @@ passport.use(new ClientPassword.Strategy({
             return done(null, valid);
           }
 
-          clients.lookup(code.clientId, function(err, client) {
+          clients.findById(code.clientId, function(err, client) {
             if (err) { return done(err); }
 
             done(null, client);
@@ -80,7 +80,7 @@ passport.use(new ClientPassword.Strategy({
 
 // BearerStrategy used to protect userinfo endpoint
 passport.use(new BearerStrategy(function(token, done) {
-  tokens.lookup(token, function(err, t) {
+  tokens.findByToken(token, function(err, t) {
     if (err) { return done(err); }
     if (!t) { return done(null, false); }
 

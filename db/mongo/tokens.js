@@ -14,75 +14,44 @@
  */
 'use strict';
 
-var debug = require('debug')('mongo-tokens');
 var db = require('./mongo.js');
-
-var tokenModel = require('../models/token');
 
 var config = require('../../config');
 var users = require('../../' + config.datastores.users);
 
-function lookup(token, cb) {
+function findByToken(token, cb) {
   db.tokens.findOne({token: token}, function(err, token) {
-    if (err) { debug(err); }
+    if (err) { return cb(err); }
 
     if (token) {
       token.id = token._id;
 
       // Populate user
       users.findById(token.user._id, function(err, user) {
-        if (err) { debug(err); return cb(err); }
+        if (err) { return cb(err); }
 
         token.user = user;
 
-        cb(null, tokenModel(token));
+        cb(null, token);
       });
     } else {
-      cb(err);
+      cb(null);
     }
   });
 }
 
-function save(t, cb) {
-  var token;
+function save(token, cb) {
+  // Link user
+  token.user = {_id: token.user._id};
 
-  if (t.isValid === undefined) {
-    token = tokenModel(t);
-  } else {
-    token = t;
-  }
+  db.tokens.save(token, function(err) {
+    if (err) { return cb(err); }
 
-  token.scope = token.scope || [];
-
-  if (!token.isValid()) {
-    return cb(new Error('Invalid token'));
-  }
-
-  lookup(token.token, function(err, t) {
-    if (err) { debug(err); return cb(err); }
-
-    if (t) {
-      return cb(new Error('Token already exists'));
-    }
-
-    if (typeof token.expiresIn !== 'number') {
-      token.expiresIn = 60;
-    }
-
-    token.createTime = new Date().getTime();
-
-    // Link user
-    token.user = {_id: token.user._id};
-
-    db.tokens.save(token, function(err) {
-      if (err) { debug(err); return cb(err); }
-
-      lookup(token.token, cb);
-    });
+    findByToken(token.token, cb);
   });
 }
 
 module.exports = {
-  lookup: lookup,
+  findByToken: findByToken,
   save: save,
 };

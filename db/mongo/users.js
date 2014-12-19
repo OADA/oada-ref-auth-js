@@ -14,20 +14,20 @@
  */
 'use strict';
 
-var debug = require('debug')('mongo-users');
 var bcrypt = require('bcrypt');
-var userModel = require('../models/user');
 
+var config = require('../../config');
 var db = require('./mongo.js');
 
 function findById(id, cb) {
   db.users.findOne({_id: db.ObjectId(id)}, function(err, user) {
-    if (err) { debug(err); }
+    if (err) { return cb(err); }
 
     if (user) {
+      // Rename mongo's _id
       user.id = user._id;
 
-      cb(null, userModel(user));
+      cb(null, user);
     } else {
       cb(err, false);
     }
@@ -35,18 +35,16 @@ function findById(id, cb) {
 }
 
 function findByUsernamePassword(username, password, cb) {
-  // Need to get config after config is finished being made. This modules
-  // "constructor" is called within config.
-  var config = require('../../config');
   var passwd =  bcrypt.hashSync(password, config.server.passwordSalt);
 
   db.users.findOne({username: username, password: passwd}, function(err, user) {
-    if (err) { debug(err); }
+    if (err) { return cb(err); }
 
     if (user) {
+      // Rename mongo's _id
       user.id = user._id;
 
-      cb(null, userModel(user));
+      cb(null, user);
     } else {
       cb(err, false);
     }
