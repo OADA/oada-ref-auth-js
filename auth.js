@@ -19,13 +19,13 @@ var LocalStrategy = require('passport-local');
 var ClientPassword = require('passport-oauth2-client-password');
 var BearerStrategy = require('passport-http-bearer').Strategy;
 
+var oadaLookup = require('oada-lookup');
 var clientSecret = require('oada-client-secret');
 
 var config = require('./_config');
 
 var users = require('./db/models/user');
 var codes = require('./db/models/code');
-var clients = require('./db/models/client');
 var tokens = require('./db/models/token');
 
 // LocalStrategy is used for the /login screen
@@ -69,7 +69,7 @@ passport.use(new ClientPassword.Strategy({
             return done(null, valid);
           }
 
-          clients.findById(code.clientId, function(err, client) {
+          oadaLookup.clientRegistration(code.clientId, function(err, client) {
             if (err) { return done(err); }
 
             done(null, client);
