@@ -23,17 +23,16 @@ var clientSecret = require('oada-client-secret');
 
 var config = require('./config');
 
-var users = require('./db/users');
-var codes = require('./db/codes');
-var clients = require('./db/clients');
-var tokens = require('./db/tokens');
+var users = require(config.datastores.users);
+var codes = require(config.datastores.codes);
+var clients = require(config.datastores.clients);
+var tokens = require(config.datastores.tokens);
 
 // LocalStrategy is used for the /login screen
 passport.use(new LocalStrategy.Strategy(function(username, password, done) {
-  users.findByUsername(username, function(err, user) {
+  users.findByUsernamePassword(username, password, function(err, user) {
     if (err) { return done(err); }
     if (!user) { return done(null, false); }
-    if (user.password != password) { return done(null, false); }
 
     return done(null, user);
   });

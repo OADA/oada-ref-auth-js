@@ -20,11 +20,10 @@ var TokenError = require('oauth2orize').TokenError;
 var jwt = require('jsonwebtoken');
 require('jws-jwk').shim();
 
-var tokens = require('./db/tokens');
-var codes = require('./db/codes');
-
-var keys = require('./keys');
 var config = require('./config');
+var tokens = require(config.datastores.tokens);
+var codes = require(config.datastores.codes);
+var keys = require('./keys');
 
 function makeHash(length) {
   return crypto.randomBytes(Math.ceil(length * 3 / 4))
@@ -97,8 +96,8 @@ function issueCode(client, redirectUri, user, ares, done) {
   });
 }
 
-function issueTokenFromCode(client, code, redirectUri, done) {
-  codes.lookup(code, function(err, code) {
+function issueTokenFromCode(client, c, redirectUri, done) {
+  codes.lookup(c, function(err, code) {
     if (err) { return done(err); }
 
     if (code.isRedeemed()) {

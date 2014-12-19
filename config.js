@@ -21,9 +21,10 @@ module.exports = {
   server: {
     jsonSpaces: 2,
     sessionSecret: 'Xka*32F@*!15',
+    passwordSalt: '$2a$10$l64QftVz6.7KR5BXNc29IO',
     port: 443,
     httpMode: false,
-    root: 'https://identity.oada-dev.com',
+    root: 'https://test.com',
   },
   endpoints: {
     authorize: '/auth',
@@ -57,10 +58,22 @@ module.exports = {
     signKid: 'kjcScjc32dwJXXLJDs3r124sa1',
   },
   certs: {
-    key: fs.readFileSync(path.join(__dirname, 'certs/ssl/key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'certs/ssl/cert.crt')),
+    key: fs.readFileSync(path.join(__dirname, 'certs/ssl/server.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'certs/ssl/server.crt')),
+    ca: fs.readFileSync(path.join(__dirname, 'certs/ssl/ca.crt')),
+    requestCrt: true,
+    rejectUnauthorized: false,
   },
   keys: {
     signPems: path.join(__dirname, 'certs/sign/'),
+  },
+  mongo: {
+    connectionString: 'localhost/oada-ref-auth',
+  },
+  datastores: {
+    users: './db/flat/users',
+    clients: './db/flat/clients',
+    tokens: './db/flat/tokens',
+    codes: './db/flat/codes',
   }
 };

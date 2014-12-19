@@ -14,36 +14,19 @@
  */
 'use strict';
 
-var users = [
-  {
-    'id': 1,
-    'username': 'frank',
-    'password': 'pass',
-    'name': 'Farmer Frank',
-    'family_name': 'Frank',
-    'given_name': 'Farmer',
-    'middle_name': '',
-    'nickname': 'Frankie',
-    'email': 'frank@openag.io'
-  }
-];
-
-module.exports.findById = function(id, cb) {
-  for (var idx in users) {
-    if (users[idx].id == id) {
-      return cb(null, users[idx]);
+module.exports = function(token) {
+  token.isValid = function() {
+    if (typeof token.token !== 'string' || !Array.isArray(token.scope) ||
+        typeof token.user !== 'object' || typeof token.clientId != 'string') {
+      return false;
+    } else {
+      return true;
     }
-  }
+  };
 
-  cb(null, false);
-};
+  token.isExpired = function() {
+    return (this.createTime + this.expiresIn < new Date().getTime());
+  };
 
-module.exports.findByUsername = function(username, cb) {
-  for (var idx in users) {
-    if (users[idx].username == username) {
-      return cb(null, users[idx]);
-    }
-  }
-
-  cb(null, false);
+  return token;
 };

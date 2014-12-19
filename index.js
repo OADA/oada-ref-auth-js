@@ -31,7 +31,7 @@ var clientDiscovery = require('oada-client-discovery');
 var wkj = require('well-known-json')();
 
 var config = require('./config');
-var clients = require('./db/clients');
+var clients = require(config.datastores.clients);
 var keys = require('./keys');
 require('./auth');
 

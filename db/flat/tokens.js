@@ -14,42 +14,26 @@
  */
 'use strict';
 
-var tokens = {
-  /*
-  "xyz": {
-    'id': 1,
-    'token': 'xyz',
-    'createTime': 1413831649937,
-    'expiresIn': 60,
-    'user': {},
-    'clientId': 'jf93caauf3uzud7f308faesf3@provider.oada-dev.com',
-  }
-  */
-};
+var tokens = require('./tokens.json');
 
-function makeToken(token) {
-  if (tokens[token] === undefined) {
-    return false;
-  }
+var tokenModel = require('../models/token');
 
-  var t = tokens[token];
-
-  t.isExpired = function() {
-    return (this.createTime + this.expiresIn < new Date().getTime());
-  };
-
-  return t;
+function lookup(token, cb) {
+  cb(null, tokenModel(token));
 }
 
-module.exports.lookup = function(token, cb) {
-  cb(null, makeToken(token));
-};
+function save(t, cb) {
+  var token;
 
-module.exports.save = function(token, cb) {
+  if (t.isValid === undefined) {
+    token = tokenModel(t);
+  } else {
+    token = t;
+  }
+
   token.scope = token.scope || [];
 
-  if (typeof token.token !== 'string' || !Array.isArray(token.scope) ||
-     typeof token.user !== 'object' || typeof token.clientId != 'string') {
+  if (!token.isValid()) {
     return cb(new Error('Invalid token'));
   }
 
@@ -66,5 +50,10 @@ module.exports.save = function(token, cb) {
 
   tokens[token.token] = JSON.parse(JSON.stringify(token));
 
-  cb(null, makeToken(token.token));
+  cb(null, tokenModel(token));
+}
+
+module.exports = {
+  lookup: lookup,
+  save: save,
 };
