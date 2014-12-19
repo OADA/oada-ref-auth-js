@@ -118,7 +118,7 @@ if (config.oidc.enable) {
 
     var userinfo = utils.createUserinfo(req.user, req.authInfo.scope);
 
-    if (userinfo.sub !== undefined) {
+    if (userinfo && userinfo.sub !== undefined) {
       res.json(userinfo);
     } else {
       res.status(401).end('Unauthorized');
