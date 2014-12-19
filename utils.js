@@ -83,11 +83,14 @@ function issueCode(client, redirectUri, user, ares, done) {
     code: makeHash(config.code.length),
     expiresIn: config.code.expiresIn,
     scope: ares.scope,
-    nonce: ares.nonce,
     user: user,
     clientId: client.clientId,
     redirectUri: redirectUri
   };
+
+  if (ares.nonce) {
+    c.nonce = ares.nonce;
+  }
 
   codes.save(c, function(err, code) {
     if (err) { return done(err); }
