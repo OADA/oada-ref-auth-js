@@ -95,7 +95,7 @@ if (config.oauth2.enable) {
   wkj.addResource('oada-configuration', {
     'authorization_endpoint': './' + config.endpoints.authorize,
     'token_endpoint': './' + config.endpoints.token,
-    'OADABaseUri': config.server.root
+    'oada_base_uri': config.server.root
   });
 }
 
