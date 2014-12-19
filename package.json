@@ -31,6 +31,7 @@
     "oada-lookup": "~0.2.1",
     "oauth2orize": "^1.0.1",
     "oauth2orize-openid": "OADA/oauth2orize-openid",
+    "object-assign": "^2.0.0",
     "passport": "^0.2.1",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",

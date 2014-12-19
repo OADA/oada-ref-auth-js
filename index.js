@@ -33,6 +33,7 @@ var wkj = require('well-known-json')();
 var config = require('./config');
 var clients = require(config.datastores.clients);
 var keys = require('./keys');
+var utils = require('./utils');
 require('./auth');
 
 var app = express();
@@ -111,20 +112,15 @@ if (config.oidc.enable) {
   app.get(config.endpoints.userinfo, require('cors')(),
       passport.authenticate('bearer', {session:false}),
       function(req, res) {
-        if (req.authInfo.scope.indexOf('profile') != -1) {
-          res.json({
-            'sub': req.user.id,
-            'name': req.user.name,
-            'family_name': req.user['family_name'],
-            'given_name': req.user['given_name'],
-            'middle_name': req.user['middle_name'],
-            'nickname': req.user.nickname,
-            'preferred_username': req.user.username
-          });
-        } else {
-          res.status(401).end('Unauthorized');
-        }
-      });
+
+    var userinfo = utils.createUserinfo(req.user, req.authInfo.scope);
+
+    if (userinfo.sub !== undefined) {
+      res.json(userinfo);
+    } else {
+      res.status(401).end('Unauthorized');
+    }
+  });
 
   wkj.addResource('openid-configuration', {
     'issuer': config.server.root,
@@ -138,8 +134,8 @@ if (config.oidc.enable) {
       'id_token',
       'code token',
       'code id_token',
-      'token id_token',
-      'code token id_token'
+      'id_token token',
+      'code id_token token'
     ],
     'subject_types_supported': [
       'public'

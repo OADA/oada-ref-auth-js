@@ -20,7 +20,11 @@ var utils = require('./utils');
 
 module.exports = function(server) {
   // Implict flow (id_token)
-  server.grant(oauth2orizeOpenId.grant.idToken(utils.issueIdToken));
+  server.grant(oauth2orizeOpenId.grant.idToken(
+        function(client, user, ares, done) {
+    ares.userinfo = true;
+    utils.issueIdToken(client, user, ares, done);
+  }));
 
   // Implict flow (id_token token)
   server.grant(oauth2orizeOpenId.grant.idTokenToken(utils.issueToken,

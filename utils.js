@@ -19,6 +19,7 @@ var crypto = require('crypto');
 var TokenError = require('oauth2orize').TokenError;
 var jwt = require('jsonwebtoken');
 require('jws-jwk').shim();
+var objectAssign = require('object-assign');
 
 var config = require('./config');
 var tokens = require(config.datastores.tokens);
@@ -34,12 +35,14 @@ function makeHash(length) {
     .replace(/=/g, '');
 }
 
-function createIdToken(aud, sub, nonce) {
+function createIdToken(aud, user, nonce, userinfoScope) {
+  userinfoScope = userinfoScope || [];
+
   var options = {
     algorithm: keys.sign[config.idToken.signKid].alg,
     expiresInMinutes: config.idToken.expiresIn / 60,
     audience: aud,
-    subject: sub,
+    subject: user.sub,
     issuer: config.server.root
   };
 
@@ -49,6 +52,12 @@ function createIdToken(aud, sub, nonce) {
 
   if (nonce !== undefined) {
     payload.nonce = nonce;
+  }
+
+  var userinfo = createUserinfo(user, userinfoScope);
+
+  if (userinfo) {
+    objectAssign(payload, userinfo);
   }
 
   return jwt.sign(payload, keys.sign[config.idToken.signKid], options);
@@ -66,6 +75,59 @@ function createToken(scope, user, clientId, done) {
   tokens.save(tok, done);
 }
 
+function createUserinfo(user, scopes) {
+  var userinfo = {};
+
+  if (scopes.indexOf('profile') != -1) {
+    objectAssign(userinfo, {
+      'sub': user.id,
+      'name': user.name,
+      'family_name': user['family_name'],
+      'given_name': user['given_name'],
+      'middle_name': user['middle_name'],
+      'nickname': user.nickname,
+      'preferred_username': user.username,
+      'profile': user.profile,
+      'picture': user.picture,
+      'website': user.website,
+      'gender': user.gender,
+      'birthdate': user.birthdate,
+      'zoneinfo': user.zoneinfo,
+      'locale': user.locale,
+      'updated_at': user['updated_at'],
+    });
+  }
+
+  if (scopes.indexOf('email') != -1) {
+    objectAssign(userinfo, {
+      'sub': user.id,
+      'email': user.email,
+      'email_verified': user['email_verified'],
+    });
+  }
+
+  if (scopes.indexOf('address') != -1) {
+    objectAssign(userinfo, {
+      'sub': user.id,
+      'address': user.address,
+    });
+  }
+
+  if (scopes.indexOf('phone') != -1) {
+    objectAssign(userinfo, {
+      'sub': user.id,
+      'phone_number': user['phone_number'],
+      'phone_number_verified': user['phone_number_verified'],
+    });
+  }
+
+  if (userinfo.sub === undefined) {
+    return undefined;
+  } else {
+    return userinfo;
+  }
+}
+
 function issueToken(client, user, ares, done) {
   createToken(ares.scope, user, client.clientId, function(err, token) {
     if (err) { return done(err); }
@@ -75,7 +137,9 @@ function issueToken(client, user, ares, done) {
 }
 
 function issueIdToken(client, user, ares, done) {
-  done(null, createIdToken(client.clientId, user.id, ares.nonce));
+  var userinfoScope = ares.userinfo ? ares.scope : [];
+
+  done(null, createIdToken(client.clientId, user, ares.nonce, userinfoScope));
 }
 
 function issueCode(client, redirectUri, user, ares, done) {
@@ -127,7 +191,7 @@ function issueTokenFromCode(client, c, redirectUri, done) {
       };
 
       if (code.scope.indexOf('openid') != -1) {
-        extras['id_token'] = createIdToken(code.clientId, code.user.id,
+        extras['id_token'] = createIdToken(code.clientId, code.user,
           code.nonce);
       }
 
@@ -140,3 +204,4 @@ module.exports.issueToken = issueToken;
 module.exports.issueCode = issueCode;
 module.exports.issueTokenFromCode = issueTokenFromCode;
 module.exports.issueIdToken = issueIdToken;
+module.exports.createUserinfo = createUserinfo;
