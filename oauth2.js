@@ -58,11 +58,15 @@ module.exports = function(_server) {
         });
       }),
       function(req, res) {
-        res.render('approve', {
-          transactionID: req.oauth2.transactionID,
-          client: req.oauth2.client,
-          scope: req.oauth2.req.scope,
-          nonce: req.oauth2.req.nonce
+        oadaLookup.trustedCDP(function(err, pl) {
+          res.render('approve', {
+            transactionID: req.oauth2.transactionID,
+            client: req.oauth2.client,
+            scope: req.oauth2.req.scope,
+            nonce: req.oauth2.req.nonce,
+            trusted: pl.indexOf(req.oauth2.client.clientId.split('@')[1]) > -1 ?
+              true : false,
+          });
         });
       }
     ],

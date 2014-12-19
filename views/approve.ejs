@@ -38,6 +38,21 @@
           <% }); %>
         </ul>
 
+        <% if(trusted) { %>
+          <strong style="color: green;">
+            Client IS registered with a trusted provider.
+          </strong>
+        <% } else { %>
+          <strong style="color: red;">
+            Client is NOT registered with a trusted provider.
+            <br />
+            Therefore, the below infomation may be incorrect.
+          </strong>
+        <% } %>
+
+        <br />
+        <br />
+
         <% if(client.puc === undefined) { %>
           <strong style="color: red;">
             No published Privacy and Data Use Principles

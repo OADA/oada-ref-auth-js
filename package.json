@@ -28,7 +28,7 @@
     "oada-client-discovery": "^0.3.2",
     "oada-client-secret": "git://github.com/oada/oada-client-secret",
     "oada-error": "^0.3.0",
-    "oada-lookup": "~0.2.1",
+    "oada-lookup": "^0.3.3",
     "oauth2orize": "^1.0.1",
     "oauth2orize-openid": "OADA/oauth2orize-openid",
     "object-assign": "^2.0.0",
