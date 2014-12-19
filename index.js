@@ -154,8 +154,8 @@ if (config.oidc.enable) {
 /////
 if (config.clientDiscovery.enable) {
   app.get(config.endpoints.clientDiscovery, clientDiscovery(clients.lookup));
-  wkj.addResource('oada-configuration', {
-    'clientDiscovery': './' + config.endpoints.clientDiscovery,
+  wkj.addResource('oada-client-discovery', {
+    'client_discovery': './' + config.endpoints.clientDiscovery,
   });
 }
 
