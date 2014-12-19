@@ -2,6 +2,7 @@
 
 - [oada-ref-auth-js](#oada-ref-auth-js)
   - [Live Example](#live-example)
+  - [OADA Authorization and Authentication Specs](#oada-authorization-and-authentication-specs)
   - [Installation Instructions](#installation-instructions)
     - [1. Get the code](#1-get-the-code)
     - [2. Install the Dependences](#2-install-the-dependences)
@@ -29,6 +30,10 @@ https://identity.oada-dev.com. A useful tool to interact with these is located
 at https://client.oada-dev.com.  
 
 The minimal examples from [@OADA/oada-id-client-js][oada-id-client-js] project can also be easily be modified to interact with this server.
+
+## OADA Authorization and Authentication Specs
+
+See specifications of OADA's Authentication and Authorization can be found [here][auth-and-auth-sepcs].
 
 ## Installation Instructions
 
@@ -263,3 +268,4 @@ the new abstraction layer.
 [greengeckodesign-blog]: http://greengeckodesign.com/blog/2013/06/15/creating-an-ssl-certificate-for-node-dot-js/
 [bcrypt]: http://bcrypt.sourceforge.net/
 [oada-id-client-js]: https://github.com/OADA/oada-id-client-js
+[auth-and-auth-sepcs]: https://github.com/OADA/oada-docs/blob/master/rest-specs/Authentication_and_Authorization.md
