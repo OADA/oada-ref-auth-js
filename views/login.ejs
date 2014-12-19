@@ -35,7 +35,7 @@
               <strong>Username</strong>
             </span>
             <input type="text" style="width: 250px;" class="form-control"
-              name="username" value="frank" />
+              name="username" value="<%= hint.username %>" />
           </div>
           <br />
           <div class="input-group input-group-lg">
@@ -43,11 +43,11 @@
               <strong>Password</strong>
             </span>
             <input type="password" style="width: 250px;" class="form-control"
-              name="password" value="pass" />
+              name="password" value="<%= hint.password %>" />
           </div>
           <br />
           <p class="lead" style="font-size: 16px;">
-            Hint - frank:pass
+            Hint - <%= hint.username %>:<%= hint.password %>
           </p>
           <p>
             <input type="submit" class="btn btn-lg btn-success" role="button"

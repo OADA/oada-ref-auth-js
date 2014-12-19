@@ -72,7 +72,9 @@ if (config.oauth2.enable || config.oidc.enable) {
   app.post(config.endpoints.token, oauth2.token);
 
   app.get(config.endpoints.login, function(req, res) {
-    res.render('login');
+    res.render('login', {
+      hint: config.hint
+    });
   });
 
   app.post(config.endpoints.login, passport.authenticate('local', {
