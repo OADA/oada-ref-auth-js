@@ -35,7 +35,7 @@
         <ul class="list-group">
           <% scope.forEach(function(s) { %>
           <li class="list-group-item"><%= s %></li>
-          <% }); %>
+          <% }) %>
         </ul>
 
         <% if(trusted) { %>
@@ -63,10 +63,12 @@
 
         <br />
         <br />
-        Supported Licenses:
-        <% client.licenses.forEach(function(lic) { %>
+        Supported License(s):
+        <% if(client.licenses && client.licenses.forEach) {
+          client.licenses.forEach(function(lic) { %>
           <%= lic.name %>
-        <% } %>
+        <% })
+          } %>
         <br />
         <br />
 
