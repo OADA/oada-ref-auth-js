@@ -1,4 +1,34 @@
+# Table of Contents
+
+- [oada-ref-auth-js](#oada-ref-auth-js)
+  - [Live Example](#live-example)
+  - [Installation Instructions](#installation-instructions)
+    - [1. Get the code](#1-get-the-code)
+    - [2. Install the Dependences](#2-install-the-dependences)
+    - [3. Generate/Install SSL Certificates](#3-generateinstall-ssl-certificates)
+      - [Reverse Proxy](#reverse-proxy)
+      - [Trusted CA SSL Certificate in `node`](#trusted-ca-ssl-certificate-in-node)
+      - [Generating a Self-Signed Certificate](#generating-a-self-signed-certificate)
+        - [Generate a Certificate Authority Certificate (ca.crt)](#generate-a-certificate-authority-certificate-cacrt)
+        - [Create a Server Private Key (server.key)](#create-a-server-private-key-serverkey)
+        - [Create a Server Certificate (server.crt)](#create-a-server-certificate-servercrt)
+        - [Save Private Key, CA Certificate, and Certificate](#save-private-key-ca-certificate-and-certificate)
+    - [4. Generate/Install JWT Signing Certificates](#4-generateinstall-jwt-signing-certificates)
+      - [With OpenSSL](#with-openssl)
+      - [With OpenSSH](#with-openssh)
+    - [5. Configure the Implementation](#5-configure-the-implementation)
+    - [6. Start it up](#6-start-it-up)
+  - [Adding New Database Abstraction Layer](#adding-new-database-abstraction-layer)
+
 # oada-ref-auth-js
+
+## Live Example
+
+A live example of this project can be found on https://provider.oada-dev.com and
+https://identity.oada-dev.com. A useful tool to interact with these is located
+at https://client.oada-dev.com.  
+
+The minimal examples from [@OADA/oada-id-client-js][oada-id-client-js] project can also be easily be modified to interact with this server.
 
 ## Installation Instructions
 
@@ -17,7 +47,7 @@ $ git clone https://github.com/OADA/oada-ref-auth-js
 
 ### 2. Install the Dependences
 ```sh
-$ cd oada-ref-auth
+$ cd oada-ref-auth-js
 $ npm install
 ```
 
@@ -213,6 +243,23 @@ or
 $ node index.js
 ```
 
+## Adding New Database Abstraction Layer
+
+New database abstraction layers can be easily added to the project. The easiest way is to copy `./db/flat` or `./db/mongo` to `./db/<new-layers-name>` and then edit the `clients.js`, `users.js`, `codes.js` and `tokens.js` files to use the new database.
+
+Here is a table of functions should be edited for each file:
+
+| File | Functions Name |
+| ---- | -------------- |
+| `clients.js` | findById |
+| `users.js` | findById, findByUsernamePassword |
+| `codes.js` | findByCode, save |
+| `tokens.js` | findByToken, save |
+
+The **datastores** section of the configuration file needs to be updated to use
+the new abstraction layer.
+
 [nginx]: http://nginx.org/
 [greengeckodesign-blog]: http://greengeckodesign.com/blog/2013/06/15/creating-an-ssl-certificate-for-node-dot-js/
 [bcrypt]: http://bcrypt.sourceforge.net/
+[oada-id-client-js]: https://github.com/OADA/oada-id-client-js
