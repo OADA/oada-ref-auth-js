@@ -63,7 +63,10 @@
 
         <br />
         <br />
-        Supported Licenses: <%= client.licenses %>
+        Supported Licenses:
+        <% client.licenses.forEach(function(lic) { %>
+          <%= lic.name %>
+        <% } %>
         <br />
         <br />
 
