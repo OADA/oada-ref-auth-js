@@ -21,7 +21,7 @@ var jwt = require('jsonwebtoken');
 require('jws-jwk').shim();
 var objectAssign = require('object-assign');
 
-var config = require('./config');
+var config = require('./_config');
 var tokens = require('./db/models/token');
 var codes = require('./db/models/code');
 var keys = require('./keys');

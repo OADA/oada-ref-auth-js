@@ -16,7 +16,7 @@
 
 var db = require('./mongo.js');
 
-var config = require('../../config');
+var config = require('../../_config');
 var users = require('../../' + config.datastores.users);
 
 function findByToken(token, cb) {

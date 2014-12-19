@@ -18,7 +18,7 @@ var fs = require('fs');
 var path = require('path');
 var rsaPemToJwk = require('rsa-pem-to-jwk');
 
-var config = require('./config');
+var config = require('./_config');
 
 /*
  * Loadis in all PEM files at config.keys.signPems to sign IdTokens with. The

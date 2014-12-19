@@ -16,7 +16,7 @@
 
 var bcrypt = require('bcrypt');
 
-var config = require('../../config');
+var config = require('../../_config');
 var db = require('./mongo.js');
 
 function findById(id, cb) {

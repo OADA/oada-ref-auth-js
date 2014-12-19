@@ -30,7 +30,7 @@ var oadaLookup = require('oada-lookup');
 var clientDiscovery = require('oada-client-discovery');
 var wkj = require('well-known-json')();
 
-var config = require('./config');
+var config = require('./_config');
 var clients = require('./db/models/client');
 var keys = require('./keys');
 var utils = require('./utils');

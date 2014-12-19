@@ -18,7 +18,7 @@ var debug = require('debug')('model-codes');
 var URI = require('URIjs');
 
 var OADAError = require('oada-error');
-var config = require('../../config');
+var config = require('../../_config');
 var db = require('../../' + config.datastores.codes);
 
 function makeCode(code) {

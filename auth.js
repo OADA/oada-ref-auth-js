@@ -21,7 +21,7 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 
 var clientSecret = require('oada-client-secret');
 
-var config = require('./config');
+var config = require('./_config');
 
 var users = require('./db/models/user');
 var codes = require('./db/models/code');

@@ -14,26 +14,8 @@
  */
 'use strict';
 
-var config = require('../../_config');
-var db = require('../../' + config.datastores.clients);
-
-function makeClient(client) {
-  // No model needed (yet)
-  return client;
+if (process.argv.length == 3) {
+  module.exports = require(process.argv[2]);
+} else {
+  module.exports = require('./config');
 }
-
-function findById(id, cb) {
-  console.log(db);
-  db.findById(id, function(err, c) {
-    var client;
-    if (!err) {
-      client = makeClient(c);
-    }
-
-    cb(err, client);
-  });
-}
-
-module.exports = {
-  findById: findById
-};
