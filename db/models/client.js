@@ -23,7 +23,6 @@ function makeClient(client) {
 }
 
 function findById(id, cb) {
-  console.log(db);
   db.findById(id, function(err, c) {
     var client;
     if (!err) {

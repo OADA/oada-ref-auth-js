@@ -19,6 +19,8 @@ var oauth2orizeOpenId = require('oauth2orize-openid');
 var utils = require('./utils');
 
 module.exports = function(server) {
+  server.grant(oauth2orizeOpenId.extensions());
+
   // Implict flow (id_token)
   server.grant(oauth2orizeOpenId.grant.idToken(
         function(client, user, ares, done) {

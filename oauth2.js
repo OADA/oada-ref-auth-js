@@ -86,7 +86,7 @@ module.exports = function(_server) {
         done(null, {
           allow: req.allow,
           scope: req.body.scope,
-          nonce: req.body.nonce,
+          nonce: req.oauth2.req.nonce,
         });
       }),
       server.errorHandler({mode: 'indirect'})
