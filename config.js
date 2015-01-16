@@ -75,5 +75,9 @@ module.exports = {
     clients: './db/flat/clients',
     tokens: './db/flat/tokens',
     codes: './db/flat/codes',
+  },
+  hint: {
+    username: '',
+    password: ''
   }
 };
