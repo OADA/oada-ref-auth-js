@@ -60,6 +60,10 @@ function makeCode(code) {
 function findByCode(code, cb) {
   db.findByCode(code, function(err, c) {
     var code;
+    if(c === undefined) {
+      err = "Code not found";
+    }
+
     if (!err) {
       code = makeCode(c);
     }
