@@ -42,7 +42,7 @@ function createIdToken(aud, user, nonce, userinfoScope) {
     algorithm: keys.sign[config.idToken.signKid].alg,
     expiresInMinutes: config.idToken.expiresIn / 60,
     audience: aud,
-    subject: user.sub,
+    subject: user.id,
     issuer: config.server.root
   };
 
