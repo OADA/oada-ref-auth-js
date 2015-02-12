@@ -12,4 +12,4 @@ before_install:
 script:
 - npm test
 after_success:
-- cat ./testland/coverage/lcov.info | ./node_modules/.bin/coveralls --verbose
+- cat ./coverage/lcov.info | ./node_modules/.bin/coveralls --verbose
