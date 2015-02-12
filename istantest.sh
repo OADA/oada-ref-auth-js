@@ -50,9 +50,10 @@ echo "PID " $PID
 sleep 10
 # Run the test here
 echo "Running testcases.."
-cd oada-compliance/authorization/
+cd oada-compliance
 ECODE=0
-node nodetest.js
+#node nodetest.js
+./test.sh
 if (( $? > 0 )); then
 	echo "Test failed! Log below"
 	cat log.txt
