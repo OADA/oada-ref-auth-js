@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/oada/oada-ref-auth-js",
   "scripts": {
-    "test": "./istantest.sh"
+    "test": "./istantestd.sh"
   },
   "dependencies": {
     "URIjs": "^1.14.1",
