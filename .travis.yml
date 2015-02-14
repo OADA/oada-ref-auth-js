@@ -1,10 +1,13 @@
 language: node_js
 node_js:
+- '0.10'
 - '0.11'
+- '0.12'
+- iojs
 before_install:
 - npm install -g istanbul
-- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=oada-dev.com" -keyout server.key -out server.crt
-- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=oada-dev.com" -keyout ca.key -out ca.crt
+- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=localhost" -keyout server.key -out server.crt
+- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=localhost" -keyout ca.key -out ca.crt
 - mkdir certs/ssl
 - mv server.key certs/ssl/
 - mv server.crt certs/ssl
@@ -13,3 +16,4 @@ script:
 - npm test
 after_success:
 - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls --verbose
+sudo: false

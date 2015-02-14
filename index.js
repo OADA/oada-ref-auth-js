@@ -190,4 +190,3 @@ if (config.server.mode === 'http') {
     console.log('Listening HTTPS on port %d', server.address().port);
   });
 }
-
