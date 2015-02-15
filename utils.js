@@ -18,7 +18,6 @@ var crypto = require('crypto');
 
 var TokenError = require('oauth2orize').TokenError;
 var jwt = require('jsonwebtoken');
-require('jws-jwk').shim();
 var objectAssign = require('object-assign');
 
 var config = require('./_config');
@@ -39,6 +38,9 @@ function createIdToken(aud, user, nonce, userinfoScope) {
   userinfoScope = userinfoScope || [];
 
   var options = {
+    header: {
+      kid: config.idToken.signKid
+    },
     algorithm: keys.sign[config.idToken.signKid].alg,
     expiresInMinutes: config.idToken.expiresIn / 60,
     audience: aud,
@@ -60,7 +62,10 @@ function createIdToken(aud, user, nonce, userinfoScope) {
     objectAssign(payload, userinfo);
   }
 
-  return jwt.sign(payload, keys.sign[config.idToken.signKid], options);
+
+  var j = jwt.sign(payload, keys.sign[config.idToken.signKid].pem, options);
+
+  return j;
 }
 
 function createToken(scope, user, clientId, done) {

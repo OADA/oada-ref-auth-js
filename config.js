@@ -24,7 +24,7 @@ module.exports = {
     passwordSalt: '$2a$10$l64QftVz6.7KR5BXNc29IO',
     port: 443,
     httpMode: false,
-    root: 'https://test.com',
+    root: 'https://localhost',
   },
   endpoints: {
     authorize: '/auth',
