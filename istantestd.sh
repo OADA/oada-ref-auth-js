@@ -17,6 +17,7 @@
 function check_success {
   if (( $? > 0 )); then echo "Unable to prepare test environment.." && exit 1; fi
 }
+SIGINT=2
 NPM=npm
 ROOTPATH=$(pwd)
 $NPM run clean
@@ -28,7 +29,7 @@ check_success
 cd oada-compliance && $NPM install
 cd $ROOTPATH
 echo "Starting instrumented server.."
-istanbul cover --include-all-sources index.js -- ./test_config.js &
+istanbul cover --include-all-sources --handle-sigint index.js -- ./test_config.js &
 PID=$!
 echo "PID " $PID
 sleep 10
@@ -41,5 +42,5 @@ if (( $? > 0 )); then
   echo "Test failed! Log below"
 	ECODE=1
 fi
-kill $PID
+kill -$SIGINT $PID
 exit $ECODE
