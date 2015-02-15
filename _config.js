@@ -26,7 +26,7 @@ if (process.argv.length == 3) {
 config.server.port = process.env.PORT || config.server.port;
 
 if(!config.server.publicUri) {
-  config.server.publicUri = URI(config.serverdomain)
+  config.server.publicUri = URI(config.server.domain)
                             .port(config.server.port)
                             .protocol(config.server.mode)
                             .normalize()
