@@ -77,7 +77,7 @@ module.exports = {
     codes: './db/flat/codes',
   },
   hint: {
-    username: '',
-    password: ''
+    username: 'frank',
+    password: 'pass'
   }
 };
