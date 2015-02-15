@@ -45,7 +45,7 @@ function createIdToken(aud, user, nonce, userinfoScope) {
     expiresInMinutes: config.idToken.expiresIn / 60,
     audience: aud,
     subject: user.id,
-    issuer: config.server.root
+    issuer: config.server.publicUri
   };
 
   var payload = {

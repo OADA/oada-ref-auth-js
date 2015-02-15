@@ -97,7 +97,8 @@ if (config.oauth2.enable) {
   wkj.addResource('oada-configuration', {
     'authorization_endpoint': './' + config.endpoints.authorize,
     'token_endpoint': './' + config.endpoints.token,
-    'oada_base_uri': config.server.root,
+    'oada_base_uri': config.server.publicUri, // TODO: This should be in it's
+                                              // own .WK document?
     'client_secret_alg_supported': [
       'RS256',
     ],
@@ -128,7 +129,7 @@ if (config.oidc.enable) {
   });
 
   wkj.addResource('openid-configuration', {
-    'issuer': config.server.root,
+    'issuer': config.server.publicUri,
     'authorization_endpoint': './' + config.endpoints.authorize,
     'token_endpoint': './' + config.endpoints.token,
     'userinfo_endpoint': './' + config.endpoints.userinfo,
@@ -174,13 +175,14 @@ app.use(wkj);
 /////
 app.use(oadaError());
 
-if (config.server.httpMode) {
-  var server = app.listen(process.env.PORT || config.server.port, function() {
+var server;
+if (config.server.mode === 'http') {
+  var server = app.listen(config.server.port, function() {
     console.log('Listening HTTP on port %d', server.address().port);
   });
 } else {
   var server = https.createServer(config.certs, app);
-  server.listen(process.env.PORT || config.server.port, function() {
+  server.listen(config.server.port, function() {
     console.log('Listening HTTPS on port %d', server.address().port);
   });
 }

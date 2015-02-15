@@ -14,8 +14,27 @@
  */
 'use strict';
 
+var URI = require('URIjs');
+
+var config;
 if (process.argv.length == 3) {
-  module.exports = require(process.argv[2]);
+  config = require(process.argv[2]);
 } else {
-  module.exports = require('./config');
+  config = require('./config');
 }
+
+config.server.port = process.env.PORT || config.server.port;
+
+if(!config.server.publicUri) {
+  config.server.publicUri = URI(config.serverdomain)
+                            .port(config.server.port)
+                            .protocol(config.server.mode)
+                            .normalize()
+                            .toString();
+} else {
+  config.server.publicUri = URI(config.server.publicUri)
+                              .normalize()
+                              .toString();
+}
+
+module.exports = config;

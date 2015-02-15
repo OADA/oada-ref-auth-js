@@ -19,6 +19,8 @@ var LocalStrategy = require('passport-local');
 var ClientPassword = require('passport-oauth2-client-password');
 var BearerStrategy = require('passport-http-bearer').Strategy;
 
+var URI = require('URIjs');
+
 var oadaLookup = require('oada-lookup');
 var clientSecret = require('oada-client-secret');
 
@@ -61,7 +63,9 @@ passport.use(new ClientPassword.Strategy({
       }
 
       clientSecret.verify(cId, cSecret, code,
-        config.server.root + config.endpoints.token,
+        URI(config.server.publicUri + config.endpoints.token)
+          .normalize()
+          .toString(),
         function(err, valid) {
           if (err) { return done(err); }
 
