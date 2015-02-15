@@ -1,3 +1,6 @@
+[![Dependency Status](https://david-dm.org/oada/oada-ref-auth-js.svg)](https://david-dm.org/oada/oada-ref-auth-js)
+[![License](http://img.shields.io/:license-Apache%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 # Table of Contents
 
 - [oada-ref-auth-js](#oada-ref-auth-js)
@@ -27,7 +30,7 @@
 
 A live example of this project can be found on https://provider.oada-dev.com and
 https://identity.oada-dev.com. A useful tool to interact with these is located
-at https://client.oada-dev.com.  
+at https://client.oada-dev.com.
 
 The minimal examples from [@OADA/oada-id-client-js][oada-id-client-js] project can also be easily be modified to interact with this server.
 
