@@ -111,10 +111,12 @@ if (config.oauth2.enable) {
 if (config.oidc.enable) {
   require('./oidc')(server);
 
+  app.options(config.endpoints.certs, require('cors')());
   app.get(config.endpoints.certs, require('cors')(), function(req, res) {
     res.json(keys.jwks);
   });
 
+  app.options(config.endpoints.userinfo, require('cors')());
   app.get(config.endpoints.userinfo, require('cors')(),
       passport.authenticate('bearer', {session:false}),
       function(req, res) {
