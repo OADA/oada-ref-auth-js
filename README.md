@@ -149,8 +149,7 @@ Currently the configuration options are:
 | passwordSalt | $2a$10$l64QftVz6.7KR5BXNc29IO | Salt for [bcrypt][bcrypt] when hashing passwords |
 | port | 443 | The port in which the server should listen on |
 | mode | http or https | If HTTP or HTTPS should be used (OADA compliance requires HTTPS) |
-| domain | provider.example.com | The domain in which this server is running
-under |
+| domain | provider.example.com | The domain in which this server is running under |
 | publicUri | https://provider.example.com:8443/oada | The full base URI in which the server is running under as seen by the outside world. This option is particularly useful for when this server is operating behind a reverse proxy or similar environment. If the desired publicUri is that of the one constructed by the above port, mode, and domain settings then this parameter can be omitted. |
 
 **endpoints**
