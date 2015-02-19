@@ -23,8 +23,9 @@ module.exports = {
     sessionSecret: 'Xka*32F@*!15',
     passwordSalt: '$2a$10$l64QftVz6.7KR5BXNc29IO',
     port: 8443,
-    httpMode: false,
-    root: 'https://localhost:8443',
+    mode: 'https',
+    domain: 'localhost',
+    publicUri: undefined
   },
   endpoints: {
     authorize: '/auth',
@@ -77,7 +78,7 @@ module.exports = {
     codes: './db/flat/codes',
   },
   hint: {
-    username: '',
-    password: ''
+    username: 'frank',
+    password: 'pass'
   }
 };
