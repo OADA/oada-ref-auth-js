@@ -12,6 +12,10 @@
       "Pat Sabpisal <ecegrid@gmail.com> (https://github.com/ssabpisa)"
   ],
   "license": "Apache 2.0",
+  "scripts": {
+    "test": "cd test && ./istantestd.sh",
+    "clean": "rm -rf oada-compliance && rm -rf coverage && rm -rf test_config.js"
+  },
   "bugs": {
     "url": "https://gitub.com/oada/oada-ref-auth-js/issues"
   },
