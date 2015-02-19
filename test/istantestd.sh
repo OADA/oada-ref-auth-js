@@ -23,22 +23,21 @@ NPM=npm
 cd ../
 ROOTPATH=$(pwd)
 $NPM run clean
-cp test/test_config.js .
 check_success
-$NPM install
+#$NPM install
 echo "Cloning test.."
-git clone -b authentication https://github.com/OADA/oada-compliance.git
+git clone -b authentication https://github.com/OADA/oada-compliance.git test/oada-compliance
 check_success
-cd oada-compliance && $NPM install
+cd test/oada-compliance && $NPM install
 cd $ROOTPATH
 echo "Starting instrumented server.."
-istanbul cover --include-all-sources --handle-sigint index.js -- ./test_config.js &
+PORT=8443 istanbul cover --include-all-sources --handle-sigint index.js -- ./config.js &
 PID=$!
 echo "PID " $PID
 sleep 10
 # Run the test here
 echo "Running testcases.."
-cd oada-compliance
+cd test/oada-compliance
 ECODE=0
 ./test
 if (( $? > 0 )); then
