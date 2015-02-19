@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
 function check_success {
   if (( $? > 0 )); then echo "Unable to prepare test environment.." && exit 1; fi
 }

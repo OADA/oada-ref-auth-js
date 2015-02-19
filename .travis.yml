@@ -6,12 +6,6 @@ node_js:
 - iojs
 before_install:
 - npm install -g istanbul
-- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=localhost" -keyout server.key -out server.crt
-- openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=IN/L=Lafayette/O=Dis/CN=localhost" -keyout ca.key -out ca.crt
-- mkdir certs/ssl
-- mv server.key certs/ssl/
-- mv server.crt certs/ssl
-- mv ca.crt certs/ssl
 script:
 - npm test
 after_success:
