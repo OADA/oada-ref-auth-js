@@ -19,8 +19,10 @@ function check_success {
 }
 SIGINT=2
 NPM=npm
+cd ../
 ROOTPATH=$(pwd)
 $NPM run clean
+cp test/test_config.js .
 check_success
 $NPM install
 echo "Cloning test.."
@@ -43,4 +45,5 @@ if (( $? > 0 )); then
 	ECODE=1
 fi
 kill -$SIGINT $PID
+wait $PID
 exit $ECODE

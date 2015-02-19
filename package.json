@@ -18,7 +18,7 @@
   "homepage": "https://github.com/oada/oada-ref-auth-js",
   "scripts": {
     "test": "./istantestd.sh",
-    "clean": "rm -rf oada-compliance && rm -rf coverage"
+    "clean": "rm -rf oada-compliance && rm -rf coverage && rm -rf test_config.js"
   },
   "dependencies": {
     "URIjs": "^1.14.1",
