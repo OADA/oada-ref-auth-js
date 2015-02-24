@@ -62,7 +62,11 @@ passport.use(new ClientPassword.Strategy({
         return done(null, false);
       }
 
-      clientSecret.verify(cId, cSecret, code,
+      if(!code.matchesClientId(cId)) {
+        return done(null, false);
+      }
+
+      clientSecret.verify(cSecret, cId, code.code,
         URI(config.server.publicUri + config.endpoints.token)
           .normalize()
           .toString(),

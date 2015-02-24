@@ -40,7 +40,7 @@
     "mongojs": "^0.18.0",
     "morgan": "^1.4.0",
     "oada-client-discovery": "^0.3.2",
-    "oada-client-secret": "^0.2.1",
+    "oada-client-secret": "^1.0.0",
     "oada-error": "^1.0.0",
     "oada-lookup": "^0.4.0",
     "oauth2orize": "^1.0.1",
