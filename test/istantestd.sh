@@ -32,7 +32,7 @@ check_success
 cd test/oada-compliance && $NPM install
 cd $ROOTPATH
 echo "Starting instrumented server.."
-PORT=$PORT istanbul cover --include-all-sources --handle-sigint index.js -- ./config.js &
+PORT=$PORT istanbul cover -x "**/db/mongo/**" -x "*gulpfile.js*" --include-all-sources --handle-sigint index.js -- ./config.js &
 PID=$!
 echo "PID " $PID
 
