@@ -28,6 +28,15 @@ function findById(id, cb) {
   });
 }
 
+function save(client, cb) {
+  db.clients.save(client, function(err) {
+    if (err) { return cb(err); }
+
+    findById(client, cb);
+  });
+}
+
 module.exports = {
-  findById: findById
+  findById: findById,
+  save: save
 };

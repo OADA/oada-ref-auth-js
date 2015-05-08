@@ -27,10 +27,10 @@ var oauth2orize = require('oauth2orize');
 
 var oadaError = require('oada-error').middleware;
 var oadaLookup = require('oada-lookup');
-var clientDiscovery = require('oada-client-discovery');
 var wkj = require('well-known-json')();
 
 var config = require('./_config');
+var dynReg = require('./dynReg');
 var clients = require('./db/models/client');
 var keys = require('./keys');
 var utils = require('./utils');
@@ -58,7 +58,7 @@ server.serializeClient(function(client, done) {
   return done(null, client.clientId);
 });
 server.deserializeClient(function(id, done) {
-  oadaLookup.clientRegistration(id, done);
+  clients.findById(id, done);
 });
 
 //////
@@ -66,6 +66,10 @@ server.deserializeClient(function(id, done) {
 //////
 if (config.oauth2.enable || config.oidc.enable) {
   var oauth2 = require('./oauth2')(server);
+
+  app.options(config.endpoints.register, require('cors')());
+  app.post(config.endpoints.register,
+      require('cors')(), bodyParser.json(), dynReg);
 
   app.get(config.endpoints.authorize, oauth2.authorize);
   app.post(config.endpoints.decision, oauth2.decision);
@@ -99,6 +103,7 @@ if (config.oauth2.enable) {
     'token_endpoint': './' + config.endpoints.token,
     'oada_base_uri': config.server.publicUri, // TODO: This should be in it's
                                               // own .WK document?
+    'registration_endpoint': './' + config.endpoints.register,
     'client_secret_alg_supported': [
       'RS256',
     ],
@@ -132,6 +137,7 @@ if (config.oidc.enable) {
 
   wkj.addResource('openid-configuration', {
     'issuer': config.server.publicUri,
+    'registration_endpoint': './' + config.endpoints.register,
     'authorization_endpoint': './' + config.endpoints.authorize,
     'token_endpoint': './' + config.endpoints.token,
     'userinfo_endpoint': './' + config.endpoints.userinfo,
@@ -157,15 +163,6 @@ if (config.oidc.enable) {
   });
 }
 
-/////
-// Client Discovery
-/////
-if (config.clientDiscovery.enable) {
-  app.get(config.endpoints.clientDiscovery, clientDiscovery(clients.findById));
-  wkj.addResource('oada-client-discovery', {
-    'client_discovery': './' + config.endpoints.clientDiscovery,
-  });
-}
 
 
 

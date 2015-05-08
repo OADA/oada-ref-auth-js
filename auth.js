@@ -22,10 +22,11 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 var URI = require('URIjs');
 
 var oadaLookup = require('oada-lookup');
-var clientSecret = require('oada-client-secret');
+var jwtBearerClientAuth = require('jwt-bearer-client-auth');
 
 var config = require('./_config');
 
+var clients = require('./db/models/client');
 var users = require('./db/models/user');
 var codes = require('./db/models/code');
 var tokens = require('./db/models/token');
@@ -62,27 +63,29 @@ passport.use(new ClientPassword.Strategy({
         return done(null, false);
       }
 
-      if(!code.matchesClientId(cId)) {
-        return done(null, false);
-      }
+      clients.findById(code.clientId, function(err, client) {
+        if (err) { return done(err); }
 
-      clientSecret.verify(cSecret, cId, code.code,
-        URI(config.server.publicUri + config.endpoints.token)
-          .normalize()
-          .toString(),
-        function(err, valid) {
-          if (err) { return done(err); }
+        var key_hint = client.jwks_uri || client.jwks;
 
-          if (!valid) {
-            return done(null, valid);
-          }
-
-          oadaLookup.clientRegistration(code.clientId, function(err, client) {
+        jwtBearerClientAuth.verify(cSecret, key_hint, cId, cId,
+          URI(config.server.publicUri + config.endpoints.token)
+            .normalize()
+            .toString(), {},
+          function(err, valid) {
             if (err) { return done(err); }
 
-            done(null, client);
+            if (!valid) {
+              return done(null, valid);
+            }
+
+            clients.findById(code.clientId, function(err, client) {
+              if (err) { return done(err); }
+
+              done(null, client);
+            });
           });
-        });
+      });
     });
   }));
 

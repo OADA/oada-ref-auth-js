@@ -30,7 +30,7 @@
       <br />
 
       <div class="jumbotron">
-        <p><strong><%= client.name %></strong> is requesting access to:</p>
+        <p><strong><%= client.client_name %></strong> is requesting access to:</p>
 
         <ul class="list-group">
           <% scope.forEach(function(s) { %>
@@ -53,22 +53,39 @@
         <br />
         <br />
 
-        <% if(client.puc === undefined) { %>
+        <% if(client.policy_uri === undefined && client.tos_uri === undefined) { %>
           <strong style="color: red;">
             No published Privacy and Data Use Principles
           </strong>
         <% } else { %>
-          <a href="<%= client.puc %>">Privacy and Data Use Principles</a>
+          <% if(client.policy_uri !== undefined) { %>
+            <a href="<%= client.policy_uri %>">Client Policy Statement</a>
+          <% } else { %>
+            <strong style="color: red;">
+              No policy statement.
+            </strong>
+          <% } %>
+          <br />
+          <% if(client.tos_uri !== undefined) { %>
+            <a href="<%= client.tos_uri %>">Client TOS Statement</a>
+          <% } else { %>
+            <strong style="color: red;">
+              No TOS statement.
+            </strong>
+          <% } %>
+
         <% } %>
 
         <br />
         <br />
         Supported License(s):
-        <% if(client.licenses && client.licenses.forEach) {
-          client.licenses.forEach(function(lic) { %>
-          <%= lic.name %>
-        <% })
+          <ul>
+          <% if(client.licenses && client.licenses.forEach) {
+            client.licenses.forEach(function(lic) { %>
+            <li><%= lic.name %></li>
+          <% })
           } %>
+          </ul>
         <br />
         <br />
 

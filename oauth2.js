@@ -23,6 +23,7 @@ var passport = require('passport');
 var oadaLookup = require('oada-lookup');
 
 var utils = require('./utils');
+var clients = require('./db/models/client');
 
 var server;
 module.exports = function(_server) {
@@ -44,13 +45,13 @@ module.exports = function(_server) {
     authorize: [
       login.ensureLoggedIn(),
       server.authorization(function(clientId, redirectURI, done) {
-        oadaLookup.clientRegistration(clientId, function(err, client) {
+        clients.findById(clientId, function(err, client) {
           if (err) { return done(err); }
           if (!client) { return done('client_id does not exist'); }
 
           // Compare the given redirectUrl to all the clients redirectUrls
-          for (var i = 0; i < client['redirectUrls'].length; i++) {
-            if (URI(client['redirectUrls'][i]).equals(redirectURI)) {
+          for (var i = 0; i < client['redirect_uris'].length; i++) {
+            if (URI(client['redirect_uris'][i]).equals(redirectURI)) {
               return done(null, client, redirectURI);
             }
           }
@@ -64,8 +65,7 @@ module.exports = function(_server) {
             client: req.oauth2.client,
             scope: req.oauth2.req.scope,
             nonce: req.oauth2.req.nonce,
-            trusted: pl.indexOf(req.oauth2.client.clientId.split('@')[1]) > -1 ?
-              true : false,
+            trusted: req.oauth2.client.trusted,
           });
         });
       }
@@ -92,6 +92,12 @@ module.exports = function(_server) {
       server.errorHandler({mode: 'indirect'})
     ],
     token: [
+      function(req, res, done) {
+        // todo: hack to use passport-oauth2-client-password
+        req.body['client_secret'] = req.body['client_assertion'];
+
+        return done();
+      },
       passport.authenticate(['oauth2-client-password'], {session: false}),
       server.token(),
       server.errorHandler({mode: 'direct'})

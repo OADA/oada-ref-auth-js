@@ -16,6 +16,7 @@
 
 var config = require('../../_config');
 var db = require('../../' + config.datastores.clients);
+var uuid = require('uuid');
 
 function makeClient(client) {
   // No model needed (yet)
@@ -33,6 +34,27 @@ function findById(id, cb) {
   });
 }
 
+function save(client, cb) {
+  client.clientId = uuid.v4();
+
+  db.findById(client.clientId, function(err, c) {
+    if (err) { debug(err); return cb(err); }
+
+    if (c) {
+      return cb(new OADAError('Client Id already exists',
+                              OADAError.codes.BAD_REQUEST,
+                              'There was a problem durring the login'));
+    }
+
+    db.save(client, function(err) {
+      if (err) { debug(err); return cb(err); }
+
+      findById(client.clientId, cb);
+    });
+  });
+}
+
 module.exports = {
-  findById: findById
+  findById: findById,
+  save: save
 };
