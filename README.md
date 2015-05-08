@@ -161,11 +161,12 @@ Currently the configuration options are:
 | authorize | /auth | The desired path after `root` for the OAuth 2.0 authorization endpoint |
 | token | /token | The desired path after `root` for the OAuth 2.0 token endpoint |
 | decision | /decision | The desired path after `root` for the OAuth 2.0 "grant screen" |
+| register | /register | The desired path after `root` for the OAuth 2.0
+Dynamic Client Registartion |
 | login | /login | The desired path after `root` for the OAuth 2.0 "login screen" |
 | logout | /logout | The desired path after `root` to logout of the current session |
 | certs | /certs | The desired path after `root` for the JWT RSA public keys |
 | userinfo | /userinfo | The desired path after `root` for the OpenID Connect Userinfo endpoint |
-| clientDiscovery | /clientDiscovery | The desired path after `root` for the OADA client discovery endpoint |
 
 **oauth2**:
 
@@ -178,12 +179,6 @@ Currently the configuration options are:
 | Key | Example Value | Description |
 | --- | ----------- | ------------ |
 | enable | true | Enable the OpenID Connect portions of the reference implementation |
-
-**clientDiscovery**:
-
-| Key | Example Value | Description |
-| --- | ----------- | ------------ |
-| enable | true | Enable the client discovery provider portions of the reference implementation |
 
 **code**:
 
