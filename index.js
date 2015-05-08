@@ -71,11 +71,15 @@ if (config.oauth2.enable || config.oidc.enable) {
   app.post(config.endpoints.register,
       require('cors')(), bodyParser.json(), dynReg);
 
-  app.get(config.endpoints.authorize, oauth2.authorize);
+  app.get(config.endpoints.authorize, function(req, res, done) {
+    res.header('X-Frame-Options', 'SAMEORIGIN');
+    return done();
+  }, oauth2.authorize);
   app.post(config.endpoints.decision, oauth2.decision);
   app.post(config.endpoints.token, oauth2.token);
 
   app.get(config.endpoints.login, function(req, res) {
+    res.header('X-Frame-Options', 'SAMEORIGIN');
     res.render('login', {
       hint: config.hint
     });
