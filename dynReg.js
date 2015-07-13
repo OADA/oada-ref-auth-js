@@ -61,7 +61,8 @@ function dynReg(req, res, done) {
         res.status(201).json(metadata);
       });
     })
-    .catch(function() {
+    .catch(function(e) {
+      console.log(e);
       res.status(400).json({
         error: 'invalid_software_statement',
         error_description: 'Software statement is malformed'

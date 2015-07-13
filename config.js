@@ -28,6 +28,7 @@ module.exports = {
     publicUri: undefined
   },
   endpoints: {
+    register: '/register',
     authorize: '/auth',
     token: '/token',
     decision: '/decision',
