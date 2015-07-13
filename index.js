@@ -158,7 +158,7 @@ if (config.oidc.enable) {
     'subject_types_supported': [
       'public'
     ],
-    'id_token_alg_values_supported': [
+    'id_token_signing_alg_values_supported': [
       'RS256'
     ],
     'token_endpoint_auth_methods_supported': [
