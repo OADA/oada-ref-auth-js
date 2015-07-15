@@ -66,8 +66,6 @@ module.exports = function(conf) {
 
   var wkj = config.get('wkj') ? config.get('wkj') : require('well-known-json')();
 
-  console.log(config.get('server'));
-
   app.set('view engine', 'ejs');
   app.set('json spaces', config.get('server:jsonSpaces'));
   app.set('views', path.join(__dirname, 'views'));
