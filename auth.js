@@ -42,11 +42,11 @@ passport.use(new LocalStrategy.Strategy(function(username, password, done) {
 }));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user.username);
 });
 
-passport.deserializeUser(function(id, done) {
-  users.findById(id, function(err, user) {
+passport.deserializeUser(function(username, done) {
+  users.findByUsername(username, function(err, user) {
     done(err, user);
   });
 });

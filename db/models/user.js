@@ -24,8 +24,8 @@ function makeUser(user) {
   return user;
 }
 
-function findById(id, cb) {
-  db.findById(id, function(err, u) {
+function findByUsername(id, cb) {
+  db.findByUsername(id, function(err, u) {
     if (err) { debug(err); }
     var user;
     if (!err) {
@@ -50,6 +50,6 @@ function findByUsernamePassword(username, password, cb) {
 }
 
 module.exports = {
-  findById: findById,
+  findByUsername: findByUsername,
   findByUsernamePassword: findByUsernamePassword,
 };

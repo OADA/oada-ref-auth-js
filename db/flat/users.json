@@ -1,5 +1,5 @@
-[
-  {
+{
+  "frank": {
     "id": 1,
     "username": "frank",
     "password": "pass",
@@ -10,4 +10,4 @@
     "nickname": "Frankie",
     "email": "frank@openag.io"
   }
-]
+}

@@ -17,27 +17,23 @@
 var _ = require('lodash');
 var users = require('./users.json');
 
-function findById(id, cb) {
-  for (var idx in users) {
-    if (users[idx].id == id) {
-      return cb(null, _.cloneDeep(users[idx]));
-    }
+function findByUsername(username, cb) {
+  if(users[username]) {
+    return cb(null, _.cloneDeep(users[username]));
   }
 
-  cb(null, false);
+  return cb(null, false);
 }
 
 function findByUsernamePassword(username, password, cb) {
-  for (var idx in users) {
-    if (users[idx].username == username && users[idx].password == password) {
-      return cb(null, _.cloneDeep(users[idx]));
-    }
+  if(users[username] && users[username].password === password) {
+      return cb(null, _.cloneDeep(users[username]));
   }
 
-  cb(null, false);
+  return cb(null, false);
 }
 
 module.exports = {
-  findById: findById,
+  findByUsername: findByUsername,
   findByUsernamePassword: findByUsernamePassword,
 };

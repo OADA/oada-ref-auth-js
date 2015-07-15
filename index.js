@@ -29,14 +29,13 @@ var URI = require('URIjs');
 
 var oadaError = require('oada-error').middleware;
 var oadaLookup = require('oada-lookup');
-var wkj = require('well-known-json')();
 
 var config = require('./config');
 
 module.exports = function(conf) {
   // TODO: This require config is very hacky. Reconsider.
   if (conf) {
-    config.overwrites(conf);
+    config.setObject(conf);
   }
 
   config.set('server:port', process.env.PORT || config.get('server:port'));
@@ -64,6 +63,10 @@ module.exports = function(conf) {
   var utils = require('./utils');
   require('./auth');
   var app = express();
+
+  var wkj = config.get('wkj') ? config.get('wkj') : require('well-known-json')();
+
+  console.log(config.get('server'));
 
   app.set('view engine', 'ejs');
   app.set('json spaces', config.get('server:jsonSpaces'));
@@ -132,8 +135,8 @@ module.exports = function(conf) {
     wkj.addResource('oada-configuration', {
       'authorization_endpoint': './' + config.get('endpoints:authorize'),
       'token_endpoint': './' + config.get('endpoints:token'),
-      'oada_base_uri': config.get('server:publicUri'), // TODO: This should be in it's
-                                                // own .WK document?
+      // TODO: This should be in it'sown .WK document?
+      'oada_base_uri': config.get('server:publicUri'),
       'registration_endpoint': './' + config.get('endpoints:register'),
       'client_secret_alg_supported': [
         'RS256',
@@ -200,7 +203,9 @@ module.exports = function(conf) {
   /////
   // .well-known
   /////
-  app.use(wkj);
+  if (!config.get('wkj')) {
+    app.use(wkj);
+  }
 
   /////
   // Standard OADA Error

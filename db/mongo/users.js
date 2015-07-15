@@ -19,8 +19,8 @@ var bcrypt = require('bcrypt');
 var config = require('../../config');
 var db = require('./mongo.js');
 
-function findById(id, cb) {
-  db.users.findOne({_id: db.ObjectId(id)}, function(err, user) {
+function findByUsername(username, cb) {
+  db.users.findOne({username: username}, function(err, user) {
     if (err) { return cb(err); }
 
     if (user) {
@@ -52,6 +52,6 @@ function findByUsernamePassword(username, password, cb) {
 }
 
 module.exports = {
-  findById: findById,
+  findById: findByUsername,
   findByUsernamePassword: findByUsernamePassword
 };

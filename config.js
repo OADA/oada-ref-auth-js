@@ -34,4 +34,16 @@ if (config) {
 
 nconf.defaults(require('./config.defaults.js'));
 
+nconf.setObject = function(object, path) {
+  path = path || '';
+
+  Object.keys(object).forEach(function(key) {
+    if(typeof object[key] === '[object]') {
+      nconf.setObject(object[key], path + key + ':');
+    } else {
+      nconf.set(path + key, object[key]);
+    }
+  });
+}
+
 module.exports = nconf;

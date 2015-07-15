@@ -27,6 +27,7 @@ module.exports = {
     domain: 'localhost',
     publicUri: undefined
   },
+  wkj: undefined,
   endpoints: {
     register: '/register',
     authorize: '/auth',

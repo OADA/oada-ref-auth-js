@@ -14,9 +14,10 @@
  */
 'use strict';
 
+var uuid = require('uuid');
+
 var config = require('../../config');
 var db = config.get('datastores:clients');
-var uuid = require('uuid');
 
 function makeClient(client) {
   // No model needed (yet)
