@@ -16,8 +16,8 @@
 
 var debug = require('debug')('model-user');
 
-var config = require('../../_config');
-var db = require('../../' + config.datastores.users);
+var config = require('../../config');
+var db = config.get('datastores:users');
 
 function makeUser(user) {
   // No model needed (yet)

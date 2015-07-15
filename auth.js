@@ -24,7 +24,7 @@ var URI = require('URIjs');
 var oadaLookup = require('oada-lookup');
 var jwtBearerClientAuth = require('jwt-bearer-client-auth');
 
-var config = require('./_config');
+var config = require('./config');
 
 var clients = require('./db/models/client');
 var users = require('./db/models/user');
@@ -69,7 +69,7 @@ passport.use(new ClientPassword.Strategy({
         var key_hint = client.jwks_uri || client.jwks;
 
         jwtBearerClientAuth.verify(cSecret, key_hint, cId, cId,
-          URI(config.server.publicUri + config.endpoints.token)
+          URI(config.get('server:publicUri') + config.get('endpoints:token'))
             .normalize()
             .toString(), {},
           function(err, valid) {

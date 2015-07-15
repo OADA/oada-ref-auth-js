@@ -20,7 +20,6 @@ var clients = require('./db/models/client');
 
 function dynReg(req, res, done) {
 
-  console.log(req.body);
   if(!req.body || !req.body.software_statement) {
     res.status(400).json({
       error: 'invalid_client_metadata',
@@ -62,7 +61,7 @@ function dynReg(req, res, done) {
       });
     })
     .catch(function(e) {
-      console.log(e);
+      console.log(e.stack);
       res.status(400).json({
         error: 'invalid_software_statement',
         error_description: 'Software statement is malformed'

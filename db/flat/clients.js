@@ -14,16 +14,24 @@
  */
 'use strict';
 
+var _ = require('lodash');
 var clients = require('./clients.json');
 
 function findById(id, cb) {
   if (clients[id]) {
-    cb(null, clients[id]);
+    cb(null, _.cloneDeep(clients[id]));
   } else {
     cb(null);
   }
 }
 
+function save(client, cb) {
+  clients[client.clientId] = _.cloneDeep(client);
+
+  findById(client.clientId, cb);
+}
+
 module.exports = {
   findById: findById,
-};
+  save: save,
+}

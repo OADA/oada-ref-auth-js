@@ -18,8 +18,8 @@ var debug = require('debug')('model-codes');
 var URI = require('URIjs');
 
 var OADAError = require('oada-error');
-var config = require('../../_config');
-var db = require('../../' + config.datastores.codes);
+var config = require('../../config');
+var db = config.get('datastores:codes');
 
 function makeCode(code) {
   code.isValid = function() {

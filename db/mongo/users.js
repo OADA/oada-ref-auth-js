@@ -16,7 +16,7 @@
 
 var bcrypt = require('bcrypt');
 
-var config = require('../../_config');
+var config = require('../../config');
 var db = require('./mongo.js');
 
 function findById(id, cb) {
@@ -35,7 +35,7 @@ function findById(id, cb) {
 }
 
 function findByUsernamePassword(username, password, cb) {
-  var passwd =  bcrypt.hashSync(password, config.server.passwordSalt);
+  var passwd =  bcrypt.hashSync(password, config.get('server:passwordSalt'));
 
   db.users.findOne({username: username, password: passwd}, function(err, user) {
     if (err) { return cb(err); }

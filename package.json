@@ -9,11 +9,14 @@
   },
   "author": "Andrew Balmos <andrew@balmos.org> (https://github.com/abalmos)",
   "contributors": [
-      "Pat Sabpisal <ecegrid@gmail.com> (https://github.com/ssabpisa)"
+    "Pat Sabpisal <ecegrid@gmail.com> (https://github.com/ssabpisa)"
   ],
   "license": "Apache 2.0",
   "scripts": {
     "test": "echo \"Skipping for now\" #cd test && ./istantestd.sh",
+    "cover": "./node_modules/.bin/istanbul cover --preload-sources -x gulpfile.js node_modules/.bin/_mocha -- -R spec",
+    "lint": "jshint --reporter node_modules/jshint-stylish/stylish.js .",
+    "style": "jscs .",
     "clean": "rm -rf test/oada-compliance && rm -rf coverage"
   },
   "bugs": {
@@ -31,11 +34,13 @@
     "ejs": "~2.3.3",
     "express": "^4.13.1",
     "express-session": "^1.11.3",
-    "jsonwebtoken": "^5.0.2",
+    "jsonwebtoken": "^5.0.4",
     "jws": "^3.0.0",
     "jwt-bearer-client-auth": "^0.3.0",
+    "lodash": "^3.10.0",
     "mongojs": "^1.0.2",
     "morgan": "^1.6.1",
+    "nconf": "^0.7.1",
     "oada-client-discovery": "^0.3.2",
     "oada-error": "^1.1.1",
     "oada-lookup": "^0.4.1",
@@ -54,9 +59,6 @@
   "devDependencies": {
     "istanbul": "~0.3.17",
     "coveralls": "~2.11.2",
-    "gulp": "^3.9.0",
-    "gulp-jscs": "^1.6.0",
-    "gulp-jshint": "^1.11.2",
     "jshint-stylish": "^2.0.1"
   }
 }

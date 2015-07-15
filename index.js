@@ -14,6 +14,7 @@
  */
 'use strict';
 
+
 var path = require('path');
 var https = require('https');
 
@@ -24,170 +25,202 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var morgan = require('morgan');
 var oauth2orize = require('oauth2orize');
+var URI = require('URIjs');
 
 var oadaError = require('oada-error').middleware;
 var oadaLookup = require('oada-lookup');
 var wkj = require('well-known-json')();
 
-var config = require('./_config');
-var dynReg = require('./dynReg');
-var clients = require('./db/models/client');
-var keys = require('./keys');
-var utils = require('./utils');
-require('./auth');
+var config = require('./config');
 
-var app = express();
+module.exports = function(conf) {
+  // TODO: This require config is very hacky. Reconsider.
+  if (conf) {
+    config.overwrites(conf);
+  }
 
-app.set('view engine', 'ejs');
-app.set('json spaces', config.server.jsonSpaces);
-app.set('views', path.join(__dirname, 'views'));
+  config.set('server:port', process.env.PORT || config.get('server:port'));
 
-app.use(morgan('combined'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({
-  secret: config.server.sessionSecret,
-  resave: false,
-  saveUninitialized: false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+  var publicUri;
+  if(!config.get('server:publicUri')) {
+    publicUri = URI()
+      .hostname(config.get('server:domain'))
+      .port(config.get('server:port'))
+      .protocol(config.get('server:mode'))
+      .normalize()
+      .toString();
+  } else {
+    publicUri = URI(config.get('server:publicUri'))
+      .normalize()
+      .toString();
+  }
 
-var server = oauth2orize.createServer();
-server.serializeClient(function(client, done) {
-  return done(null, client.clientId);
-});
-server.deserializeClient(function(id, done) {
-  clients.findById(id, done);
-});
+  config.set('server:publicUri', publicUri);
 
-//////
-// UI
-//////
-if (config.oauth2.enable || config.oidc.enable) {
-  var oauth2 = require('./oauth2')(server);
+  // Require these late because they depend on the config
+  var dynReg = require('./dynReg');
+  var clients = require('./db/models/client');
+  var keys = require('./keys');
+  var utils = require('./utils');
+  require('./auth');
+  var app = express();
 
-  app.options(config.endpoints.register, require('cors')());
-  app.post(config.endpoints.register,
-      require('cors')(), bodyParser.json(), dynReg);
+  app.set('view engine', 'ejs');
+  app.set('json spaces', config.get('server:jsonSpaces'));
+  app.set('views', path.join(__dirname, 'views'));
 
-  app.get(config.endpoints.authorize, function(req, res, done) {
-    res.header('X-Frame-Options', 'SAMEORIGIN');
-    return done();
-  }, oauth2.authorize);
-  app.post(config.endpoints.decision, oauth2.decision);
-  app.post(config.endpoints.token, oauth2.token);
-
-  app.get(config.endpoints.login, function(req, res) {
-    res.header('X-Frame-Options', 'SAMEORIGIN');
-    res.render('login', {
-      hint: config.hint
-    });
-  });
-
-  app.post(config.endpoints.login, passport.authenticate('local', {
-    successReturnToOrRedirect: '/',
-    failureRedirect: config.endpoints.login,
+  app.use(morgan('combined'));
+  app.use(cookieParser());
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(session({
+    secret: config.get('server:sessionSecret'),
+    resave: false,
+    saveUninitialized: false
   }));
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-  app.get(config.endpoints.logout, function(req, res) {
-    req.logout();
-    res.redirect(req.get('Referrer'));
+  var server = oauth2orize.createServer();
+  server.serializeClient(function(client, done) {
+    return done(null, client.clientId);
+  });
+  server.deserializeClient(function(id, done) {
+    clients.findById(id, done);
   });
 
-  app.use(express.static(path.join(__dirname, 'public')));
+  //////
+  // UI
+  //////
+  if (config.get('oauth2:enable') || config.get('oidc:enable')) {
+    var oauth2 = require('./oauth2')(server);
+
+    app.options(config.get('endpoints:register'), require('cors')());
+    app.post(config.get('endpoints:register'),
+        require('cors')(), bodyParser.json(), dynReg);
+
+    app.get(config.get('endpoints:authorize'), function(req, res, done) {
+      res.header('X-Frame-Options', 'SAMEORIGIN');
+      return done();
+    }, oauth2.authorize);
+    app.post(config.get('endpoints:decision'), oauth2.decision);
+    app.post(config.get('endpoints:token'), oauth2.token);
+
+    app.get(config.get('endpoints:login'), function(req, res) {
+      res.header('X-Frame-Options', 'SAMEORIGIN');
+      res.render('login', {
+        hint: config.get('hint')
+      });
+    });
+
+    app.post(config.get('endpoints:login'), passport.authenticate('local', {
+      successReturnToOrRedirect: '/',
+      failureRedirect: config.get('endpoints:login'),
+    }));
+
+    app.get(config.get('endpoints:logout'), function(req, res) {
+      req.logout();
+      res.redirect(req.get('Referrer'));
+    });
+
+    app.use(express.static(path.join(__dirname, 'public')));
+  }
+
+  //////
+  // OAuth 2.0
+  //////
+  if (config.get('oauth2:enable')) {
+    wkj.addResource('oada-configuration', {
+      'authorization_endpoint': './' + config.get('endpoints:authorize'),
+      'token_endpoint': './' + config.get('endpoints:token'),
+      'oada_base_uri': config.get('server:publicUri'), // TODO: This should be in it's
+                                                // own .WK document?
+      'registration_endpoint': './' + config.get('endpoints:register'),
+      'client_secret_alg_supported': [
+        'RS256',
+      ],
+    });
+  }
+
+  //////
+  // OIDC
+  //////
+  if (config.get('oidc:enable')) {
+    require('./oidc')(server);
+
+    app.options(config.get('endpoints:certs'), require('cors')());
+    app.get(config.get('endpoints:certs'), require('cors')(), function(req, res) {
+      res.json(keys.jwks);
+    });
+
+    app.options(config.get('endpoints:userinfo'), require('cors')());
+    app.get(config.get('endpoints:userinfo'), require('cors')(),
+        passport.authenticate('bearer', {session:false}),
+        function(req, res) {
+
+      var userinfo = utils.createUserinfo(req.user, req.authInfo.scope);
+
+      if (userinfo && userinfo.sub !== undefined) {
+        res.json(userinfo);
+      } else {
+        res.status(401).end('Unauthorized');
+      }
+    });
+
+    wkj.addResource('openid-configuration', {
+      'issuer': config.get('server:publicUri'),
+      'registration_endpoint': './' + config.get('endpoints:register'),
+      'authorization_endpoint': './' + config.get('endpoints:authorize'),
+      'token_endpoint': './' + config.get('endpoints:token'),
+      'userinfo_endpoint': './' + config.get('endpoints:userinfo'),
+      'jwks_uri': './' + config.get('endpoints:certs'),
+      'response_types_supported': [
+        'code',
+        'token',
+        'id_token',
+        'code token',
+        'code id_token',
+        'id_token token',
+        'code id_token token'
+      ],
+      'subject_types_supported': [
+        'public'
+      ],
+      'id_token_signing_alg_values_supported': [
+        'RS256'
+      ],
+      'token_endpoint_auth_methods_supported': [
+        'client_secret_post'
+      ]
+    });
+  }
+
+
+
+
+  /////
+  // .well-known
+  /////
+  app.use(wkj);
+
+  /////
+  // Standard OADA Error
+  /////
+  app.use(oadaError());
+
+  return app;
 }
 
-//////
-// OAuth 2.0
-//////
-if (config.oauth2.enable) {
-  wkj.addResource('oada-configuration', {
-    'authorization_endpoint': './' + config.endpoints.authorize,
-    'token_endpoint': './' + config.endpoints.token,
-    'oada_base_uri': config.server.publicUri, // TODO: This should be in it's
-                                              // own .WK document?
-    'registration_endpoint': './' + config.endpoints.register,
-    'client_secret_alg_supported': [
-      'RS256',
-    ],
-  });
-}
-
-//////
-// OIDC
-//////
-if (config.oidc.enable) {
-  require('./oidc')(server);
-
-  app.options(config.endpoints.certs, require('cors')());
-  app.get(config.endpoints.certs, require('cors')(), function(req, res) {
-    res.json(keys.jwks);
-  });
-
-  app.options(config.endpoints.userinfo, require('cors')());
-  app.get(config.endpoints.userinfo, require('cors')(),
-      passport.authenticate('bearer', {session:false}),
-      function(req, res) {
-
-    var userinfo = utils.createUserinfo(req.user, req.authInfo.scope);
-
-    if (userinfo && userinfo.sub !== undefined) {
-      res.json(userinfo);
-    } else {
-      res.status(401).end('Unauthorized');
-    }
-  });
-
-  wkj.addResource('openid-configuration', {
-    'issuer': config.server.publicUri,
-    'registration_endpoint': './' + config.endpoints.register,
-    'authorization_endpoint': './' + config.endpoints.authorize,
-    'token_endpoint': './' + config.endpoints.token,
-    'userinfo_endpoint': './' + config.endpoints.userinfo,
-    'jwks_uri': './' + config.endpoints.certs,
-    'response_types_supported': [
-      'code',
-      'token',
-      'id_token',
-      'code token',
-      'code id_token',
-      'id_token token',
-      'code id_token token'
-    ],
-    'subject_types_supported': [
-      'public'
-    ],
-    'id_token_signing_alg_values_supported': [
-      'RS256'
-    ],
-    'token_endpoint_auth_methods_supported': [
-      'client_secret_post'
-    ]
-  });
-}
-
-
-
-
-/////
-// .well-known
-/////
-app.use(wkj);
-
-/////
-// Standard OADA Error
-/////
-app.use(oadaError());
-
-var server;
-if (config.server.mode === 'http') {
-  var server = app.listen(config.server.port, function() {
-    console.log('Listening HTTP on port %d', server.address().port);
-  });
-} else {
-  var server = https.createServer(config.certs, app);
-  server.listen(config.server.port, function() {
-    console.log('Listening HTTPS on port %d', server.address().port);
-  });
+if (require.main === module) {
+  var app = module.exports();
+  var server;
+  if (config.get('server:mode') === 'http') {
+    var server = app.listen(config.get('server:port'), function() {
+      console.log('Listening HTTP on port %d', server.address().port);
+    });
+  } else {
+    var server = https.createServer(config.get('certs'), app);
+    server.listen(config.get('server:port'), function() {
+      console.log('Listening HTTPS on port %d', server.address().port);
+    });
+  }
 }

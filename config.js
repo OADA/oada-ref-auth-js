@@ -14,72 +14,24 @@
  */
 'use strict';
 
-var path = require('path');
-var fs = require('fs');
+var nconf = require('nconf');
 
-module.exports = {
-  server: {
-    jsonSpaces: 2,
-    sessionSecret: 'Xka*32F@*!15',
-    passwordSalt: '$2a$10$l64QftVz6.7KR5BXNc29IO',
-    port: 443,
-    mode: 'https',
-    domain: 'localhost',
-    publicUri: undefined
-  },
-  endpoints: {
-    register: '/register',
-    authorize: '/auth',
-    token: '/token',
-    decision: '/decision',
-    login: '/login',
-    logout: '/logout',
-    certs: '/certs',
-    userinfo: '/userinfo',
-    clientDiscovery: '/clientDiscovery',
-  },
-  oauth2: {
-    enable: true,
-  },
-  oidc: {
-    enable: true,
-  },
-  clientDiscovery: {
-    enable: true,
-  },
-  code: {
-    length: 25,
-    expiresIn: 10,
-  },
-  token: {
-    length: 40,
-    expiresIn: 3600,
-  },
-  idToken: {
-    expiresIn: 3600,
-    signKid: 'kjcScjc32dwJXXLJDs3r124sa1',
-  },
-  certs: {
-    key: fs.readFileSync(path.join(__dirname, 'certs/ssl/server.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'certs/ssl/server.crt')),
-    ca: fs.readFileSync(path.join(__dirname, 'certs/ssl/ca.crt')),
-    requestCrt: true,
-    rejectUnauthorized: false,
-  },
-  keys: {
-    signPems: path.join(__dirname, 'certs/sign/'),
-  },
-  mongo: {
-    connectionString: 'localhost/oada-ref-auth',
-  },
-  datastores: {
-    users: './db/flat/users',
-    clients: './db/flat/clients',
-    tokens: './db/flat/tokens',
-    codes: './db/flat/codes',
-  },
-  hint: {
-    username: 'frank',
-    password: 'pass'
+nconf.use('memory');
+
+// Order of precedence: argv, env, config file, defaults
+nconf.argv();
+nconf.env({whitelist: 'config'});
+
+// Load an external (optional) config file
+var config = nconf.get('config');
+if (config) {
+  if (!fs.existsSync(config)) {
+    throw new Error('Could not find config file: ' + config);
   }
-};
+
+  nconf.file(config);
+}
+
+nconf.defaults(require('./config.defaults.js'));
+
+module.exports = nconf;

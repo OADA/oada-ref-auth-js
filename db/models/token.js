@@ -17,8 +17,8 @@
 var debug = require('debug')('model-tokens');
 
 var OADAError = require('oada-error');
-var config = require('../../_config');
-var db = require('../../' + config.datastores.tokens);
+var config = require('../../config');
+var db = config.get('datastores:tokens');
 
 function makeToken(token) {
   token.isValid = function() {

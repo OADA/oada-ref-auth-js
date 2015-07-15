@@ -14,8 +14,8 @@
  */
 'use strict';
 
-var config = require('../../_config');
-var db = require('../../' + config.datastores.clients);
+var config = require('../../config');
+var db = config.get('datastores:clients');
 var uuid = require('uuid');
 
 function makeClient(client) {

@@ -20,7 +20,7 @@ var TokenError = require('oauth2orize').TokenError;
 var jwt = require('jsonwebtoken');
 var objectAssign = require('object-assign');
 
-var config = require('./_config');
+var config = require('./config');
 var tokens = require('./db/models/token');
 var codes = require('./db/models/code');
 var keys = require('./keys');
@@ -37,15 +37,16 @@ function makeHash(length) {
 function createIdToken(aud, user, nonce, userinfoScope) {
   userinfoScope = userinfoScope || [];
 
+  var idToken = config.get('idToken');
   var options = {
     header: {
-      kid: config.idToken.signKid
+      kid: idToken.signKid
     },
-    algorithm: keys.sign[config.idToken.signKid].alg,
-    expiresInMinutes: config.idToken.expiresIn / 60,
+    algorithm: keys.sign[idToken.signKid].alg,
+    expiresInMinutes: idToken.expiresIn / 60,
     audience: aud,
     subject: user.id,
-    issuer: config.server.publicUri
+    issuer: config.get('server:publicUri')
   };
 
   var payload = {
@@ -62,16 +63,16 @@ function createIdToken(aud, user, nonce, userinfoScope) {
     objectAssign(payload, userinfo);
   }
 
-
-  var j = jwt.sign(payload, keys.sign[config.idToken.signKid].pem, options);
+  var j = jwt.sign(payload, keys.sign[idToken.signKid].pem, options);
 
   return j;
 }
 
 function createToken(scope, user, clientId, done) {
+  var token = config.get('token');
   var tok = {
-    token: makeHash(config.token.length),
-    expiresIn: config.token.expiresIn,
+    token: makeHash(token.length),
+    expiresIn: token.expiresIn,
     scope: scope,
     user: user,
     clientId: clientId,
@@ -148,9 +149,10 @@ function issueIdToken(client, user, ares, done) {
 }
 
 function issueCode(client, redirectUri, user, ares, done) {
+  var code = config.get('code');
   var c = {
-    code: makeHash(config.code.length),
-    expiresIn: config.code.expiresIn,
+    code: makeHash(code.length),
+    expiresIn: code.expiresIn,
     scope: ares.scope,
     user: user,
     clientId: client.clientId,

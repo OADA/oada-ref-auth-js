@@ -15,7 +15,7 @@
 'use strict';
 var mongojs = require('mongojs');
 
-var config = require('../../_config');
+var config = require('../../config');
 
-module.exports = mongojs(config.mongo.connectionString, ['users', 'clients',
-    'codes', 'tokens']);
+module.exports = mongojs(config.get('mongo:connectionString'),
+    ['users', 'clients', 'codes', 'tokens']);

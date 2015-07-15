@@ -14,10 +14,11 @@
  */
 'use strict';
 
+var _ = require('lodash');
 var codes = require('./codes.json');
 
 function findByCode(code, cb) {
-  cb(null, codes[code]);
+  cb(null, _.cloneDeep(codes[code]));
 }
 
 function save(code, cb) {
