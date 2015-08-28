@@ -133,10 +133,8 @@ module.exports = function(conf) {
     wkj.addResource('oada-configuration', {
       'authorization_endpoint': './' + config.get('endpoints:authorize'),
       'token_endpoint': './' + config.get('endpoints:token'),
-      // TODO: This should be in it'sown .WK document?
-      'oada_base_uri': config.get('server:publicUri'),
       'registration_endpoint': './' + config.get('endpoints:register'),
-      'client_secret_alg_supported': [
+      'token_endpoint_auth_signing_alg_values_supported': [
         'RS256',
       ],
     });
