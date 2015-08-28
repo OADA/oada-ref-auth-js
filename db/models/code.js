@@ -50,9 +50,16 @@ function makeCode(code) {
     return this.redeemed;
   };
 
-  code.redeem = function() {
-    return (this.redeemed = true);
-  };
+  code.redeem = function(cb) {
+    var self = this;
+    this.redeemed = true;
+
+    db.save(this, function(err) {
+      if (err) { debug(err); return cb(err); }
+
+      findByCode(self.code, cb);
+    });
+  }
 
   return code;
 }

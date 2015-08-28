@@ -37,7 +37,6 @@ module.exports = {
     logout: '/logout',
     certs: '/certs',
     userinfo: '/userinfo',
-    clientDiscovery: '/clientDiscovery',
   },
   oauth2: {
     enable: true,
@@ -45,8 +44,8 @@ module.exports = {
   oidc: {
     enable: true,
   },
-  clientDiscovery: {
-    enable: true,
+  dynamicRegistration: {
+    trustedListLookupTimeout: 5000,
   },
   code: {
     length: 25,

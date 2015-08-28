@@ -17,6 +17,7 @@
 var keys = require('./keys');
 var trustedJws = require('oada-trusted-jws');
 var clients = require('./db/models/client');
+var config = require('./config');
 
 function dynReg(req, res, done) {
 
@@ -29,8 +30,9 @@ function dynReg(req, res, done) {
     return done();
   }
 
-  trustedJws(req.body.software_statement)
-    .spread(function(trusted, metadata) {
+  trustedJws(req.body.software_statement, {
+    timeout: config.get('dynamicRegistration:trustedListLookupTimeout')
+  }).spread(function(trusted, metadata) {
       metadata.trusted = trusted;
 
       if(!metadata.contacts || !metadata.client_name ||

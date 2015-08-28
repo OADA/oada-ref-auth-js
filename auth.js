@@ -73,7 +73,13 @@ passport.use(new ClientPassword.Strategy({
             .normalize()
             .toString(), {},
           function(err, valid) {
-            if (err) { return done(err); }
+            if (err) {
+              if(err.name === 'JsonWebTokenError') {
+                return done(null, err);
+              } else {
+                return done(err);
+              }
+            }
 
             if (!valid) {
               return done(null, valid);

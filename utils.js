@@ -182,27 +182,37 @@ function issueTokenFromCode(client, c, redirectUri, done) {
       return done(new TokenError('Code expired', 'invalid_request'));
     }
     if (!code.matchesClientId(client.clientId)) {
-      return done(new TokenError('Client ID does not match orignal request',
+      code.redeem(function(err, code) {
+        if (err) { return done(err); }
+
+        return done(new TokenError('Client ID does not match orignal request',
                                  'invalid_client'));
+      });
     }
     if (!code.matchesRedirectUri(redirectUri)) {
-      return done(new TokenError('Redirect URI does not match orignal request',
-                                 'invalid_request'));
+      code.redeem(function(err, code) {
+        if (err) { return done(err); }
+
+        return done(new TokenError('Redirect URI does not match orignal ' +
+                                   'request', 'invalid_request'));
+      });
     }
 
-    code.redeem();
+    code.redeem(function(err, code) {
+      if (err) { return done(err); }
 
-    createToken(code.scope, code.user, code.clientId, function(err, token) {
-      var extras = {
-        'expires_in': token.expiresIn
-      };
+      createToken(code.scope, code.user, code.clientId, function(err, token) {
+        var extras = {
+          'expires_in': token.expiresIn
+        };
 
-      if (code.scope.indexOf('openid') != -1) {
-        extras['id_token'] = createIdToken(code.clientId, code.user,
-          code.nonce);
-      }
+        if (code.scope.indexOf('openid') != -1) {
+          extras['id_token'] = createIdToken(code.clientId, code.user,
+            code.nonce);
+        }
 
-      done(null, token.token, extras);
+        done(null, token.token, extras);
+      });
     });
   });
 }
