@@ -18,6 +18,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var ClientPassword = require('passport-oauth2-client-password');
 var BearerStrategy = require('passport-http-bearer').Strategy;
+var AuthorizationError = require('oauth2orize').AuthorizationError;
 
 var URI = require('URIjs');
 
@@ -57,7 +58,10 @@ passport.use(new ClientPassword.Strategy({
   },
   function(req, cId, cSecret, done) {
     codes.findByCode(req.body.code, function(err, code) {
-      if (err) { return done(err); }
+      if (err) {
+        return done(new AuthorizationError('Code not found',
+              'invalid_request'));
+      }
 
       if (code.isRedeemed()) {
         return done(null, false);

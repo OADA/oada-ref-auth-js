@@ -47,7 +47,7 @@ module.exports = function(_server) {
       server.authorization(function(clientId, redirectURI, done) {
         clients.findById(clientId, function(err, client) {
           if (err) { return done(err); }
-          if (!client) { return done('client_id does not exist'); }
+          if (!client) { return done(null, false); }
 
           // Compare the given redirectUrl to all the clients redirectUrls
           for (var i = 0; i < client['redirect_uris'].length; i++) {
@@ -55,7 +55,7 @@ module.exports = function(_server) {
               return done(null, client, redirectURI);
             }
           }
-          done('Invalid redirect_url');
+          return done(null, false);
         });
       }),
       function(req, res) {
@@ -68,7 +68,8 @@ module.exports = function(_server) {
             trusted: req.oauth2.client.trusted,
           });
         });
-      }
+      },
+      server.errorHandler({mode: 'indirect'})
     ],
     decision: [
       login.ensureLoggedIn(),
