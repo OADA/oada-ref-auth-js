@@ -73,6 +73,16 @@ module.exports = {
   mongo: {
     connectionString: 'localhost/oada-ref-auth',
   },
+  arango: {
+    connectionString: 'http://arangodb:8529',
+    database: 'oada-ref-auth',
+    collections: {
+      users: 'users',
+      clients: 'clients',
+      tokens: 'tokens',
+      codes: 'codes',
+    },
+  },
   datastores: {
     users: require('./db/flat/users'),
     clients: require('./db/flat/clients'),
