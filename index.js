@@ -40,6 +40,17 @@ module.exports = function(conf) {
 
   config.set('server:port', process.env.PORT || config.get('server:port'));
 
+  // Add the prefix to the endpoints if there is one:
+  var pfx = config.get('endpointsPrefix');
+  if (pfx.length > 0) {
+    var endpoints = config.get('endpoints');
+    Object.keys(endpoints).forEach(function(k) { 
+      config.set('endpoints:'+k, 
+        (pfx+endpoints[k]).replace(/\/\//g,'') // fix any double slashes
+      )
+    });
+  }
+
   var publicUri;
   if(!config.get('server:publicUri')) {
     publicUri = URI()

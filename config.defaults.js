@@ -28,6 +28,7 @@ module.exports = {
     publicUri: undefined
   },
   wkj: undefined,
+  endpointsPrefix: '', // so you can place this under a sub-path in your domain
   endpoints: {
     register: '/register',
     authorize: '/auth',
