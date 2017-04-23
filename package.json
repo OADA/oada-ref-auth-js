@@ -14,6 +14,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "test": "echo \"Skipping for now\" #cd test && ./istantestd.sh",
+    "test-arango": "mocha test/arango/index.js",
     "cover": "./node_modules/.bin/istanbul cover --preload-sources -x gulpfile.js node_modules/.bin/_mocha -- -R spec",
     "lint": "jshint --reporter node_modules/jshint-stylish .",
     "style": "jscs .",
@@ -25,6 +26,7 @@
   "homepage": "https://github.com/oada/oada-ref-auth-js",
   "dependencies": {
     "URIjs": "^1.15.2",
+    "arangojs": "^5.6.0",
     "bcrypt": "^0.8.3",
     "body-parser": "^1.13.2",
     "connect-ensure-login": "^0.1.1",
@@ -38,7 +40,8 @@
     "jsonwebtoken": "^5.0.4",
     "jws": "^3.0.0",
     "jwt-bearer-client-auth": "^0.3.0",
-    "lodash": "^3.10.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.18.1",
     "mongojs": "^1.0.2",
     "morgan": "^1.6.1",
     "nconf": "^0.7.1",
@@ -58,8 +61,9 @@
     "well-known-json": "~0.2.0"
   },
   "devDependencies": {
-    "istanbul": "~0.3.17",
+    "chai": "^3.5.0",
     "coveralls": "~2.11.2",
+    "istanbul": "~0.3.17",
     "jshint-stylish": "^2.0.1"
   }
 }
