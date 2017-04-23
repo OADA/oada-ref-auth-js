@@ -28,8 +28,12 @@ if (config) {
   if (!fs.existsSync(config)) {
     throw new Error('Could not find config file: ' + config);
   }
-
-  nconf.file(config);
+  if (config.match(/\.json$/)) {
+    nconf.file(config);
+  } else {
+    // .JS file instead, so require it rather than nconf.file it:
+    nconf.use('literal', require(config));
+  }
 }
 
 nconf.defaults(require('./config.defaults.js'));
