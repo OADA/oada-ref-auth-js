@@ -14,41 +14,32 @@
  */
 'use strict';
 
-var db = require('./mongo.js');
-
-var config = require('../../config');
-var users = config.get('datastores:users');
+var db = require('./db.js');
+var users = require('./users.js');
+var _ = require('lodash');
 
 function findByToken(token, cb) {
-  db.tokens.findOne({token: token}, function(err, token) {
-    if (err) { return cb(err); }
-
-    if (token) {
-      token.id = token._id;
-
-      // Populate user
-      users.findById(token.user._id, function(err, user) {
-        if (err) { return cb(err); }
-
-        token.user = user;
-
-        cb(null, token);
-      });
-    } else {
-      cb(null);
-    }
-  });
+  return db.tokens.firstExample({token: token})
+  .then(dbtoken => {
+    if (!dbtoken) return cb('Token not found');
+    // Overwrite arango's _id
+    dbtoken._id = dbtoken._key;
+    // Populate user
+    users.findById(dbtoken.user._id, function(err, user) {
+      if (err) { return cb(err); }
+      dbtoken.user = user;
+      return cb(null, dbtoken);
+    });
+  }).catch(err => cb(err));
 }
 
 function save(token, cb) {
+  token = _.cloneDeep(token);
   // Link user
   token.user = {_id: token.user._id};
-
-  db.tokens.save(token, function(err) {
-    if (err) { return cb(err); }
-
-    findByToken(token.token, cb);
-  });
+  return db.tokens.save(token)
+  .then(() => findByToken(token.token, cb))
+  .catch(err => cb(err));
 }
 
 module.exports = {

@@ -14,40 +14,33 @@
  */
 'use strict';
 
-var db = require('./mongo.js');
-var users = require('../models/user');
+var db = require('./db.js');
+var users = require('./users.js');
+var _ = require('lodash');
 
 function findByCode(code, cb) {
-  db.codes.findOne({code: code}, function(err, code) {
-    if (err) { return cb(err); }
-
-    if (code) {
-      // Rename mongo's _id
-      code.id = code._id;
-
-      // Populate user
-      users.findById(code.user._id, function(err, user) {
-        if (err) { return cb(err); }
-
-        code.user = user;
-
-        cb(null, code);
-      });
-    } else {
-      cb(null);
-    }
-  });
+  db.codes.firstExample({code: code})
+  .then(dbcode => {
+    if (!dbcode) return cb('Code not found');
+    // Rename arango's _id
+    dbcode._id = dbcode._key;
+    // Populate user
+    users.findById(dbcode.user._id, function(err, user) {
+      if (err) { return cb(err); }
+      dbcode.user = user;
+      cb(null, dbcode);
+    });
+  }).catch(err => cb(err));
 }
 
 function save(code, cb) {
+  code = _.cloneDeep(code);
   // Link user
   code.user = {_id: code.user._id};
 
-  db.codes.save(code, function(err) {
-    if (err) { return cb(err); }
-
-    findByCode(code.code, cb);
-  });
+  db.codes.save(code)
+  .then(() => findByCode(code.code,cb))
+  .catch(err => cb(err));
 }
 
 module.exports = {

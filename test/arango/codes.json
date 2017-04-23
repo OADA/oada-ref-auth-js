@@ -3,7 +3,7 @@
     "code": "xyz",
     "scope": [],
     "nonce": "",
-    "user": {},
+    "user": { "_id": "123frank" },
     "createTime": 1413831649937,
     "expiresIn": 60,
     "redeemed": true,

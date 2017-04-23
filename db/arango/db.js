@@ -1,6 +1,6 @@
 var config = require('../../config');
 
-const db = require('arangodb')(config.get('arango:connectionString'));
+const db = require('arangojs')(config.get('arango:connectionString'));
 
 db.useDatabase(config.get('arango:database'));
 

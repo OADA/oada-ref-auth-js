@@ -1,7 +1,8 @@
 [
   {
+    "_key": "123frank",
     "username": "frank",
-    "password": "pass",
+    "password": "test",
     "name": "Farmer Frank",
     "family_name": "Frank",
     "given_name": "Farmer",

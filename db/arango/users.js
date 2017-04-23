@@ -19,39 +19,43 @@ var bcrypt = require('bcrypt');
 var config = require('../../config');
 var db = require('./db.js');
 
+function findById(id, cb) {
+  db.users.document(id)
+  .then(user => {
+    if (!user) return cb('User not found',false);
+    // Rename arango's _key
+    user._id = user._key;
+    return cb(null, user);
+  }).catch(err => cb(err));
+}
+
 function findByUsername(username, cb) {
-  db.users.firstExample({username: username})., function(err, user) {
-    if (err) { return cb(err); }
-
-    if (user) {
-      // Rename mongo's _id
-      user.id = user._id;
-
-      cb(null, user);
-    } else {
-      cb(err, false);
-    }
-  });
+  db.users.firstExample({username: username})
+  .then(user => {
+    if (!user) return cb('User not found',false);
+    // Rename arango's _id
+    user._id = user._key;
+    return cb(null, user);
+  }).catch(err => cb(err));
 }
 
 function findByUsernamePassword(username, password, cb) {
-  var passwd =  bcrypt.hashSync(password, config.get('server:passwordSalt'));
-
-  db.users.findOne({username: username, password: passwd}, function(err, user) {
-    if (err) { return cb(err); }
-
-    if (user) {
-      // Rename mongo's _id
-      user.id = user._id;
-
-      cb(null, user);
-    } else {
-      cb(err, false);
-    }
-  });
+  let user = null;
+  return db.users.firstExample({username: username})
+  .then(u => {
+    user = u;
+    if (!user) throw 'User not found';
+    return bcrypt.compare(password,user.password);
+  }).then(thesame => {
+    if (!thesame) return cb('User not found',false);
+    // Rename arango's _key
+    user._id = user._key;
+    return cb(null, user);
+  }).catch(err => cb(err));
 }
 
 module.exports = {
-  findById: findByUsername,
-  findByUsernamePassword: findByUsernamePassword
+  findById: findById,
+  findByUsernamePassword: findByUsernamePassword,
+  findByUsername: findByUsername,
 };

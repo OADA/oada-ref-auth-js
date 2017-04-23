@@ -14,26 +14,20 @@
  */
 'use strict';
 
-var db = require('./mongo.js');
+var db = require('./db.js');
 
 function findById(id, cb) {
-  db.clients.findOne({clientId: id}, {_id: 0}, function(err, client) {
-    if (err) { return cb(err); }
-
-    if (client) {
-      cb(null, client);
-    } else {
-      cb(err);
-    }
-  });
+  return db.clients.firstExample({clientId: id})
+  .then(client => {
+    if (!client) return cb('Client not found');
+    cb(null,client);
+  }).catch(err => cb(err));
 }
 
 function save(client, cb) {
-  db.clients.save(client, function(err) {
-    if (err) { return cb(err); }
-
-    findById(client, cb);
-  });
+  return db.clients.save(client)
+  .then(() => findById(client.clientId,cb))
+  .catch(err => cb(err));
 }
 
 module.exports = {
