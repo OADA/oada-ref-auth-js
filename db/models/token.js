@@ -18,7 +18,8 @@ var debug = require('debug')('model-tokens');
 
 var OADAError = require('oada-error');
 var config = require('../../config');
-var db = config.get('datastores:tokens');
+var path = require('path');
+var db = require(path.join(__dirname,'/../../',config.get('datastores:tokens')));
 
 function makeToken(token) {
   token.isValid = function() {

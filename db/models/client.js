@@ -17,7 +17,8 @@
 var uuid = require('uuid');
 
 var config = require('../../config');
-var db = config.get('datastores:clients');
+var path = require('path');
+var db = require(path.join(__dirname,'/../../',config.get('datastores:clients')));
 
 function makeClient(client) {
   // No model needed (yet)

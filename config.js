@@ -15,6 +15,7 @@
 'use strict';
 
 var nconf = require('nconf');
+var fs = require('fs');
 
 nconf.use('memory');
 

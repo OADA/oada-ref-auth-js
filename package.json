@@ -19,8 +19,8 @@
     "lint": "jshint --reporter node_modules/jshint-stylish .",
     "style": "jscs .",
     "clean": "rm -rf test/oada-compliance && rm -rf coverage",
-    "start": "node index.js"
-
+    "start": "node index.js",
+    "init": "node init.js"
   },
   "bugs": {
     "url": "https://gitub.com/oada/oada-ref-auth-js/issues"

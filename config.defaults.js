@@ -18,6 +18,7 @@ var path = require('path');
 var fs = require('fs');
 
 module.exports = {
+  init: function() { }, // this will run if you call npm run init.  Replace in your own config with your own init.
   server: {
     jsonSpaces: 2,
     sessionSecret: 'Xka*32F@*!15',
@@ -84,10 +85,10 @@ module.exports = {
     },
   },
   datastores: {
-    users: require('./db/flat/users'),
-    clients: require('./db/flat/clients'),
-    tokens: require('./db/flat/tokens'),
-    codes: require('./db/flat/codes'),
+    users: './db/flat/users',
+    clients: './db/flat/clients',
+    tokens: './db/flat/tokens',
+    codes: './db/flat/codes',
   },
   hint: {
     username: 'frank',
