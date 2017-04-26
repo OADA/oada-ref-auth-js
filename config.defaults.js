@@ -83,6 +83,13 @@ module.exports = {
       tokens: 'tokens',
       codes: 'codes',
     },
+    defaultusers: [
+      {   username: "frank",           password: "test",
+              name: "Farmer Frank", family_name: "Frank",
+        given_name: "Farmer",       middle_name: "",
+          nickname: "Frankie",            email: "frank@openag.io",
+      },
+    ],
   },
   datastores: {
     users: './db/flat/users',
