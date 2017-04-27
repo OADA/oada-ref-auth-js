@@ -14,7 +14,7 @@
  */
 'use strict';
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 var config = require('../../config');
 var db = require('./mongo.js');

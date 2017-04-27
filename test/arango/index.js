@@ -4,7 +4,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const expect = require('chai').expect;
 const Promise = require('bluebird');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userdocs = require('./users.json');
 const clientdocs = require('./clients.json');

@@ -5,7 +5,7 @@ const debug = require('debug')('arango/init');
 const Database  = require('arangojs').Database;
 const _ = require('lodash');
 const Promise = global.Promise = require('bluebird');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Allow oada-ref-auth-js to pass us the config, avoiding circular requires
 module.exports = config => {

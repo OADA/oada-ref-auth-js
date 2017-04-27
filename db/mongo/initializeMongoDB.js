@@ -17,7 +17,7 @@
 
 var path = require('path');
 var mongojs = require('mongojs');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var config = require('../../config');
 
 if (process.argv.length < 3) {
