@@ -41,12 +41,12 @@ module.exports = function(conf) {
   config.set('server:port', process.env.PORT || config.get('server:port'));
 
   // Add the prefix to the endpoints if there is one:
-  var pfx = config.get('endpointsPrefix');
-  if (pfx.length > 0) {
+  var epfx = config.get('endpointsPrefix');
+  if (epfx.length > 0) {
     var endpoints = config.get('endpoints');
     Object.keys(endpoints).forEach(function(k) { 
       config.set('endpoints:'+k, 
-        (pfx+endpoints[k]).replace(/\/\//g,'') // fix any double slashes
+        (epfx+endpoints[k]).replace(/\/\//g,'') // fix any double slashes
       )
     });
   }
@@ -140,11 +140,13 @@ module.exports = function(conf) {
   //////
   // OAuth 2.0
   //////
+  const pfx = config.get('wellknownPrefix');
+  if (!pfx || pfx.length < 1) pfx = '';
   if (config.get('oauth2:enable')) {
     wkj.addResource('oada-configuration', {
-      'authorization_endpoint': './' + config.get('endpoints:authorize'),
-      'token_endpoint': './' + config.get('endpoints:token'),
-      'registration_endpoint': './' + config.get('endpoints:register'),
+      'authorization_endpoint': './' + pfx + config.get('endpoints:authorize'),
+      'token_endpoint': './' + pfx + config.get('endpoints:token'),
+      'registration_endpoint': './' + pfx + config.get('endpoints:register'),
       'token_endpoint_auth_signing_alg_values_supported': [
         'RS256',
       ],
@@ -178,11 +180,11 @@ module.exports = function(conf) {
 
     wkj.addResource('openid-configuration', {
       'issuer': config.get('server:publicUri'),
-      'registration_endpoint': './' + config.get('endpoints:register'),
-      'authorization_endpoint': './' + config.get('endpoints:authorize'),
-      'token_endpoint': './' + config.get('endpoints:token'),
-      'userinfo_endpoint': './' + config.get('endpoints:userinfo'),
-      'jwks_uri': './' + config.get('endpoints:certs'),
+      'registration_endpoint': './' + pfx + config.get('endpoints:register'),
+      'authorization_endpoint': './' + pfx + config.get('endpoints:authorize'),
+      'token_endpoint': './' + pfx + config.get('endpoints:token'),
+      'userinfo_endpoint': './' + pfx + config.get('endpoints:userinfo'),
+      'jwks_uri': './' + pfx + config.get('endpoints:certs'),
       'response_types_supported': [
         'code',
         'token',
