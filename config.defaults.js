@@ -30,7 +30,6 @@ module.exports = {
   },
   wkj: undefined,
   endpointsPrefix: '', // so you can place this under a sub-path in your domain
-  wellknownPrefix: '', // so you can let this service run unaware of domain, but well-known is correct.
   endpoints: {
     register: '/register',
     authorize: '/auth',
