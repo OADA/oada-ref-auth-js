@@ -24,7 +24,7 @@
     <div class="container">
       <br />
       <div class="header">
-        <img style="width: 50px;" src="/oada-logo.png" alt="OADA Logo" />
+        <img style="width: 50px;" src="<%= logo_url %>" alt="OADA Logo" />
         Open Ag Data Alliance
       </div>
       <br />
@@ -89,7 +89,7 @@
         <br />
         <br />
 
-        <form action="/decision" method="post">
+        <form action="<%= decision_url%>" method="post">
           <input name="transaction_id" type="hidden"
             value="<%= transactionID %>" />
           <% scope.forEach(function(s) { %>

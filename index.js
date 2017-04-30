@@ -15,9 +15,10 @@
 'use strict';
 
 
+var config = require('./config');
+
 var path = require('path');
 var https = require('https');
-
 var express = require('express');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
@@ -30,7 +31,6 @@ var URI = require('URIjs');
 var oadaError = require('oada-error').middleware;
 var oadaLookup = require('oada-lookup');
 
-var config = require('./config');
 
 module.exports = function(conf) {
   // TODO: This require config is very hacky. Reconsider.
@@ -39,17 +39,6 @@ module.exports = function(conf) {
   }
 
   config.set('server:port', process.env.PORT || config.get('server:port'));
-
-  // Add the prefix to the endpoints if there is one:
-  var epfx = config.get('endpointsPrefix');
-  if (epfx.length > 0) {
-    var endpoints = config.get('endpoints');
-    Object.keys(endpoints).forEach(function(k) { 
-      config.set('endpoints:'+k, 
-        (epfx+endpoints[k]).replace(/\/\//g,'') // fix any double slashes
-      )
-    });
-  }
 
   var publicUri;
   if(!config.get('server:publicUri')) {
@@ -104,7 +93,7 @@ module.exports = function(conf) {
   // UI
   //////
   if (config.get('oauth2:enable') || config.get('oidc:enable')) {
-    var oauth2 = require('./oauth2')(server);
+    var oauth2 = require('./oauth2')(server,config);
 
     app.options(config.get('endpoints:register'), require('cors')());
     app.post(config.get('endpoints:register'),
@@ -119,13 +108,17 @@ module.exports = function(conf) {
 
     app.get(config.get('endpoints:login'), function(req, res) {
       res.header('X-Frame-Options', 'SAMEORIGIN');
+console.log('setting login_url = ', config.get('endpoints:login'));
       res.render('login', {
-        hint: config.get('hint')
+        hint: config.get('hint'),
+        logo_url: config.get('endpointsPrefix')+'/oada-logo.png',
+        login_url: config.get('endpoints:login'),
       });
     });
 
+    const pfx = config.get('endpointsPrefix') || '';
     app.post(config.get('endpoints:login'), passport.authenticate('local', {
-      successReturnToOrRedirect: '/',
+      successReturnToOrRedirect: '/' + pfx,
       failureRedirect: config.get('endpoints:login'),
     }));
 
@@ -134,7 +127,10 @@ module.exports = function(conf) {
       res.redirect(req.get('Referrer'));
     });
 
-    app.use(express.static(path.join(__dirname, 'public')));
+    if (config.get('endpointsPrefix'))
+      app.use(config.get('endpointsPrefix'), express.static(path.join(__dirname, 'public')));
+    else
+      app.use(express.static(path.join(__dirname, 'public')));
   }
 
   //////

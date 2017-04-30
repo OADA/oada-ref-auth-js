@@ -26,7 +26,7 @@ var utils = require('./utils');
 var clients = require('./db/models/client');
 
 var server;
-module.exports = function(_server) {
+module.exports = function(_server,config) {
   server = _server;
 
   // Implict flow (token)
@@ -43,7 +43,7 @@ module.exports = function(_server) {
   //////
   return {
     authorize: [
-      login.ensureLoggedIn(),
+      login.ensureLoggedIn(config.get('endpoints:login')),
       server.authorization(function(clientId, redirectURI, done) {
         clients.findById(clientId, function(err, client) {
           if (err) { return done(err); }
@@ -66,13 +66,15 @@ module.exports = function(_server) {
             scope: req.oauth2.req.scope,
             nonce: req.oauth2.req.nonce,
             trusted: req.oauth2.client.trusted,
+            logo_url: config.get('endpointsPrefix')+'/oada-logo.png',
+            decision_url: config.get('endpoints:decision'),
           });
         });
       },
       server.errorHandler({mode: 'indirect'})
     ],
     decision: [
-      login.ensureLoggedIn(),
+      login.ensureLoggedIn(config.get('endpoints:login')),
       server.decision(function parseDecision(req, done) {
 
         var validScope = req.body.scope.every(function(el) {

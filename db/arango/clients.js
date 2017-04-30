@@ -15,19 +15,27 @@
 'use strict';
 
 var db = require('./db.js');
+var debug = require('debug')('info');
 
 function findById(id, cb) {
+  debug('retrieving client { clientId: "'+id+'" }');
   return db.clients.firstExample({clientId: id})
   .then(client => {
-    if (!client) return cb('Client not found');
+    if (!client) return cb(null,null);
     cb(null,client);
-  }).catch(err => cb(err));
+  }).catch(err => {
+    if (err.code === 404) return cb(null,null); // it's ok if client is not found
+    cb(err)
+  });
 }
 
 function save(client, cb) {
+  debug('saving clientId ',client.clientId);
   return db.clients.save(client)
   .then(() => findById(client.clientId,cb))
-  .catch(err => cb(err));
+  .catch(err => {
+    cb(err);
+  })
 }
 
 module.exports = {

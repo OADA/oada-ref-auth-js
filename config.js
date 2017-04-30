@@ -16,6 +16,8 @@
 
 var nconf = require('nconf');
 var fs = require('fs');
+var _ = require('lodash');
+var debug = require('debug')('info');
 
 nconf.use('memory');
 
@@ -50,5 +52,17 @@ nconf.setObject = function(object, path) {
     }
   });
 }
+
+// If there is an endpointsPrefix, update all the endpoints to include the
+// prefix before returning:
+const pfx = nconf.get('endpointsPrefix');
+if (typeof pfx === 'string') {
+  debug('config: Adding supplied prefix '+pfx+' to all endpoints');
+  const endpoints = nconf.get('endpoints');
+  _.mapValues(endpoints, (v,k) => {
+    nconf.set('endpoints:'+k, pfx+v);
+  });
+}
+
 
 module.exports = nconf;

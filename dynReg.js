@@ -18,6 +18,7 @@ var keys = require('./keys');
 var trustedJws = require('oada-trusted-jws');
 var clients = require('./db/models/client');
 var config = require('./config');
+var debug = require('debug')('error');
 
 function dynReg(req, res, done) {
 
@@ -48,6 +49,7 @@ function dynReg(req, res, done) {
 
       clients.save(metadata, function(err, client) {
         if(err) {
+          debug('Failed to save new dynReg client.  err = ', err);
           res.status(400).json({
             error: 'invalid_client_metadata',
             error_description: 'Unexpected error - Metadata could not be stored'
