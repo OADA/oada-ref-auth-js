@@ -17,6 +17,7 @@
 var uuid = require('uuid');
 
 var config = require('../../config');
+var debug = require('debug')('info');
 var path = require('path');
 var db = require(path.join(__dirname,'/../../',config.get('datastores:clients')));
 
