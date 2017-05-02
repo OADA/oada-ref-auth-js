@@ -17,6 +17,8 @@
 
 var config = require('./config');
 
+var trace = require('debug')('index/trace');
+
 var path = require('path');
 var https = require('https');
 var express = require('express');
@@ -100,6 +102,7 @@ module.exports = function(conf) {
         require('cors')(), bodyParser.json(), dynReg);
 
     app.get(config.get('endpoints:authorize'), function(req, res, done) {
+      trace('GET '+config.get('endpoints:authorize')+': setting X-Frame-Options=SAMEORIGIN before oauth2.authorize');
       res.header('X-Frame-Options', 'SAMEORIGIN');
       return done();
     }, oauth2.authorize);
@@ -107,8 +110,8 @@ module.exports = function(conf) {
     app.post(config.get('endpoints:token'), oauth2.token);
 
     app.get(config.get('endpoints:login'), function(req, res) {
+      trace('GET '+config.get('endpoints:login')+': setting X-Frame-Options=SAMEORIGIN before rendering login');
       res.header('X-Frame-Options', 'SAMEORIGIN');
-console.log('setting login_url = ', config.get('endpoints:login'));
       res.render('login', {
         hint: config.get('hint'),
         logo_url: config.get('endpointsPrefix')+'/oada-logo.png',

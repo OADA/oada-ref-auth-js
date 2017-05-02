@@ -15,7 +15,7 @@
 'use strict';
 
 var db = require('./db.js');
-var debug = require('debug')('info');
+var debug = require('debug')('arango:client/trace');
 
 function findById(id, cb) {
   debug('retrieving client { clientId: "'+id+'" }');

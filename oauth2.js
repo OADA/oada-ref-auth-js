@@ -19,6 +19,7 @@ var login = require('connect-ensure-login');
 var oauth2orize = require('oauth2orize');
 var AuthorizationError = require('oauth2orize').AuthorizationError;
 var passport = require('passport');
+var debug = require('debug')('oauth2/trace');
 
 var oadaLookup = require('oada-lookup');
 
@@ -76,16 +77,16 @@ module.exports = function(_server,config) {
     decision: [
       login.ensureLoggedIn(config.get('endpoints:login')),
       server.decision(function parseDecision(req, done) {
-
         var validScope = req.body.scope.every(function(el) {
           return (req.oauth2.req.scope.indexOf(el) != -1);
         });
-
+        
         if (!validScope) {
           return done(new AuthorizationError('Scope does not match orignal ' +
               'request', 'invalid_scope'));
         }
 
+        debug('decision: allow = ', req.allow, ', scope = ', req.body.scope, ', nonce = ', req.oauth2.req.nonce);
         done(null, {
           allow: req.allow,
           scope: req.body.scope,

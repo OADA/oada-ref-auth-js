@@ -17,8 +17,10 @@
 var db = require('./db.js');
 var users = require('./users.js');
 var _ = require('lodash');
+var trace = require('debug')('arango:codes/trace');
 
 function findByCode(code, cb) {
+  trace('findByCode: searching for code ', code);
   db.codes.firstExample({code: code})
   .then(dbcode => {
     if (!dbcode) return cb('Code not found');
@@ -30,7 +32,10 @@ function findByCode(code, cb) {
       dbcode.user = user;
       cb(null, dbcode);
     });
-  }).catch(err => cb(err));
+  }).catch(err => {
+    if (err.code === 404) return cb(null,null);
+    cb(err)
+  });
 }
 
 function save(code, cb) {
@@ -38,6 +43,7 @@ function save(code, cb) {
   // Link user
   code.user = {_id: code.user._id};
 
+  trace('save: saving code ', code);
   db.codes.save(code)
   .then(() => findByCode(code.code,cb))
   .catch(err => cb(err));

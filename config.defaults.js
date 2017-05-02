@@ -99,6 +99,6 @@ module.exports = {
   },
   hint: {
     username: 'frank',
-    password: 'pass'
+    password: 'test'
   }
 };

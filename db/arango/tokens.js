@@ -17,8 +17,10 @@
 var db = require('./db.js');
 var users = require('./users.js');
 var _ = require('lodash');
+var trace = require('debug')('arango:token/trace');
 
 function findByToken(token, cb) {
+  trace('findByToken: searching for token ', token);
   return db.tokens.firstExample({token: token})
   .then(dbtoken => {
     if (!dbtoken) return cb('Token not found');
@@ -30,13 +32,17 @@ function findByToken(token, cb) {
       dbtoken.user = user;
       return cb(null, dbtoken);
     });
-  }).catch(err => cb(err));
+  }).catch(err => {
+    if (err.code === 404) return cb(null,null);
+    cb(err)
+  });
 }
 
 function save(token, cb) {
   token = _.cloneDeep(token);
   // Link user
   token.user = {_id: token.user._id};
+  trace('save: saving token ', token);
   return db.tokens.save(token)
   .then(() => findByToken(token.token, cb))
   .catch(err => cb(err));
