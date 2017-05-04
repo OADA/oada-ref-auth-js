@@ -14,6 +14,9 @@
  */
 'use strict';
 
+// The config needs to know whether to look for command-line arguments or not,
+// so set isLibrary in global scope before requiring.
+global.isLibrary = !(require.main === module);
 
 var config = require('./config');
 

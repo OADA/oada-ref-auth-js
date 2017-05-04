@@ -25,17 +25,22 @@ nconf.use('memory');
 nconf.argv();
 nconf.env({whitelist: 'config'});
 
-// Load an external (optional) config file
-var config = nconf.get('config');
-if (config) {
-  if (!fs.existsSync(config)) {
-    throw new Error('Could not find config file: ' + config);
-  }
-  if (config.match(/\.json$/)) {
-    nconf.file(config);
-  } else {
-    // .JS file instead, so require it rather than nconf.file it:
-    nconf.use('literal', require(config));
+// Load an external (optional) config file from command-line args, but
+// only if we're running standalone and not included as a library.
+// index.js sets this global variable since it's the only one that knows
+// if it's a library or not.
+if (!global.isLibrary) {
+  var config = nconf.get('config');
+  if (config) {
+    if (!fs.existsSync(config)) {
+      throw new Error('Could not find config file: ' + config);
+    }
+    if (config.match(/\.json$/)) {
+      nconf.file(config);
+    } else {
+      // .JS file instead, so require it rather than nconf.file it:
+      nconf.use('literal', require(config));
+    }
   }
 }
 
