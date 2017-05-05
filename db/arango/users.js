@@ -17,51 +17,22 @@
 var bcrypt = require('bcryptjs');
 
 var config = require('../../config');
-var db = require('./db.js');
+var oadaLib = require('oada-lib-arangodb');
 var trace = require('debug')('arango:user/trace');
 
 function findById(id, cb) {
   trace('findById: searching for user ',id);
-  db.users.document(id)
-  .then(user => {
-    if (!user) return cb('User not found',false);
-    // Rename arango's _key
-    user._id = user._key;
-    return cb(null, user);
-  }).catch(err => {
-    if (err.code === 404) return cb(null,null);
-    cb(err);
-  });
+  oadaLib.users.findById(id).asCallback(cb);
 }
 
 function findByUsername(username, cb) {
   trace('findByUsername: searching for user ',username);
-  db.users.firstExample({username: username})
-  .then(user => {
-    if (!user) return cb('User not found',false);
-    // Rename arango's _id
-    user._id = user._key;
-    return cb(null, user);
-  }).catch(err => {
-    if (err.code === 404) return cb(null,null);
-    cb(err)
-  });
+  oadaLib.users.findByUsername(username).asCallback(cb);
 }
 
 function findByUsernamePassword(username, password, cb) {
   trace('findByUsername: searching for user ',username, ' with a password');
-  let user = null;
-  return db.users.firstExample({username: username})
-  .then(u => {
-    user = u;
-    if (!user) throw 'User not found';
-    return bcrypt.compare(password,user.password);
-  }).then(thesame => {
-    if (!thesame) return cb('User not found',false);
-    // Rename arango's _key
-    user._id = user._key;
-    return cb(null, user);
-  }).catch(err => cb(err));
+  oadaLib.users.findByUsernamePassword(username, password).asCallback(cb);
 }
 
 module.exports = {

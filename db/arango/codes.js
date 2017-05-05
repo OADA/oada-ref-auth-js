@@ -14,28 +14,13 @@
  */
 'use strict';
 
-var db = require('./db.js');
-var users = require('./users.js');
 var _ = require('lodash');
 var trace = require('debug')('arango:codes/trace');
+var oadaLib = require('oada-lib-arangodb');
 
 function findByCode(code, cb) {
   trace('findByCode: searching for code ', code);
-  db.codes.firstExample({code: code})
-  .then(dbcode => {
-    if (!dbcode) return cb('Code not found');
-    // Rename arango's _id
-    dbcode._id = dbcode._key;
-    // Populate user
-    users.findById(dbcode.user._id, function(err, user) {
-      if (err) { return cb(err); }
-      dbcode.user = user;
-      cb(null, dbcode);
-    });
-  }).catch(err => {
-    if (err.code === 404) return cb(null,null);
-    cb(err)
-  });
+  oadaLib.codes.findByCode(code).asCallback(cb);
 }
 
 function save(code, cb) {
@@ -44,9 +29,7 @@ function save(code, cb) {
   code.user = {_id: code.user._id};
 
   trace('save: saving code ', code);
-  db.codes.save(code)
-  .then(() => findByCode(code.code,cb))
-  .catch(err => cb(err));
+  oadaLib.codes.save(code).asCallback(cb);
 }
 
 module.exports = {

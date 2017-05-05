@@ -15,27 +15,13 @@
 'use strict';
 
 var db = require('./db.js');
-var users = require('./users.js');
 var _ = require('lodash');
 var trace = require('debug')('arango:token/trace');
+var oadaLib = require('oada-lib-arangodb');
 
 function findByToken(token, cb) {
   trace('findByToken: searching for token ', token);
-  return db.tokens.firstExample({token: token})
-  .then(dbtoken => {
-    if (!dbtoken) return cb('Token not found');
-    // Overwrite arango's _id
-    dbtoken._id = dbtoken._key;
-    // Populate user
-    users.findById(dbtoken.user._id, function(err, user) {
-      if (err) { return cb(err); }
-      dbtoken.user = user;
-      return cb(null, dbtoken);
-    });
-  }).catch(err => {
-    if (err.code === 404) return cb(null,null);
-    cb(err)
-  });
+  oadaLib.tokens.findByToken(token).asCallback(cb);
 }
 
 function save(token, cb) {
@@ -43,9 +29,7 @@ function save(token, cb) {
   // Link user
   token.user = {_id: token.user._id};
   trace('save: saving token ', token);
-  return db.tokens.save(token)
-  .then(() => findByToken(token.token, cb))
-  .catch(err => cb(err));
+  oadaLib.tokens.save(token).asCallback(cb);
 }
 
 module.exports = {
