@@ -18,7 +18,7 @@ var debug = require('debug')('model-user');
 
 var config = require('../../config');
 var path = require('path');
-var db = require(path.join(__dirname,'/../../',config.get('datastores:users')));
+var db = require(path.join(__dirname,'/../../db',config.get('auth:datastoresDriver'),'users.js'));
 
 function makeUser(user) {
   // No model needed (yet)

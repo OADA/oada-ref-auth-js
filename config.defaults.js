@@ -91,12 +91,7 @@ module.exports = {
       },
     ],
   },
-  datastores: {
-    users: './db/flat/users',
-    clients: './db/flat/clients',
-    tokens: './db/flat/tokens',
-    codes: './db/flat/codes',
-  },
+  datastoresDriver: 'flat',
   hint: {
     username: 'frank',
     password: 'test'

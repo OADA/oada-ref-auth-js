@@ -14,28 +14,17 @@
  */
 'use strict';
 
-var db = require('./db.js');
 var debug = require('debug')('arango:client/trace');
+var oadaLib = require('oada-lib-arangodb');
 
 function findById(id, cb) {
   debug('retrieving client { clientId: "'+id+'" }');
-  return db.clients.firstExample({clientId: id})
-  .then(client => {
-    if (!client) return cb(null,null);
-    cb(null,client);
-  }).catch(err => {
-    if (err.code === 404) return cb(null,null); // it's ok if client is not found
-    cb(err)
-  });
+  oadaLib.clients.findById(id).asCallback(cb);
 }
 
 function save(client, cb) {
   debug('saving clientId ',client.clientId);
-  return db.clients.save(client)
-  .then(() => findById(client.clientId,cb))
-  .catch(err => {
-    cb(err);
-  })
+  oadaLib.clients.save(client).asCallback(cb);
 }
 
 module.exports = {

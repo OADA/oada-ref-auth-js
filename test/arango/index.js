@@ -5,6 +5,7 @@ const _ = require('lodash');
 const expect = require('chai').expect;
 const Promise = require('bluebird');
 const bcrypt = require('bcryptjs');
+const oadaLib = require('oada-lib-arangodb');
 
 const userdocs = require('./users.json');
 const clientdocs = require('./clients.json');
@@ -16,36 +17,24 @@ let libs = {}; // pull this later after config sets the dbname it creates
 
 // Tests for the arangodb driver:
 
-let db;
-let dbname;
-let cols;
+let db = oadaLib.arango;
+let cols = config.get('arango:collections');
 let colnames;
 let frankid = null;
+
 describe('arango driver', () => {
   before(() => {
-    // Create the test database:
-    db = new Database(config.get('arango:connectionString'));
-    dbname = 'oada-ref-auth_arangotest-'+moment().format('YYYY-MM-DD-HH-mm-ss');
-    config.set('arango:database',dbname);
-    cols = config.get('arango:collections');
-    colnames = _.values(cols);
-
-    return db.createDatabase(dbname)
+    // Create collections for users, clients, tokens, etc.
+    return oadaLib.init.run()
     .then(() => {
-      db.useDatabase(dbname);
-
-      // Create collections for users, clients, tokens, etc.
-      return Promise.map(colnames, c => db.collection(c).create());
-    }).then(() => { 
-
-      // Create the indexes on each collection:
-      return Promise.all([
-        db.collection(cols.users)  .createHashIndex('username', { unique: true, sparse: true }),
-        db.collection(cols.clients).createHashIndex('clientId', { unique: true, sparse: true }),
-        db.collection(cols.tokens) .createHashIndex(   'token', { unique: true, sparse: true }),
-        db.collection(cols.codes)  .createHashIndex(    'code', { unique: true, sparse: true }),
-      ]);
-    }).then(() => {
+      return Promise.props({
+        users: db.collection(cols.users).truncate(),
+        clients: db.collection(cols.clients).truncate(),
+        tokens: db.collection(cols.tokens).truncate(),
+        codes: db.collection(cols.codes).truncate(),
+      });
+    })
+    .then(() => {
       // hash the password:
       const hashed = _.map(userdocs, u => {
         const r = _.cloneDeep(u);
@@ -72,7 +61,6 @@ describe('arango driver', () => {
       };
 
     }).catch(err => {
-      console.log('FAILED to initialize arango tests by creating database '+dbname);
       console.log('The error = ', err);
     });
   });
@@ -171,10 +159,7 @@ describe('arango driver', () => {
   //-------------------------------------------------------
 
   after(() => {
-    db.useDatabase('_system'); // arango only lets you drop a database from the _system db
-    return db.dropDatabase(dbname)
-    .then(() => { console.log('Successfully cleaned up test database '+dbname); })
-    .catch(err => console.log('Could not drop test database '+dbname+' after the tests! err = ', err));
+    return oadaLib.init.cleanup();
   });
 
 });

@@ -14,7 +14,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "test": "echo \"Skipping for now\" #cd test && ./istantestd.sh",
-    "test-arango": "mocha test/arango/index.js",
+    "test-arango": "isTest=true mocha test/arango/index.js",
     "cover": "./node_modules/.bin/istanbul cover --preload-sources -x gulpfile.js node_modules/.bin/_mocha -- -R spec",
     "lint": "jshint --reporter node_modules/jshint-stylish .",
     "style": "jscs .",
@@ -49,6 +49,7 @@
     "nconf": "^0.7.1",
     "oada-client-discovery": "^0.3.2",
     "oada-error": "^1.1.1",
+    "oada-lib-arangodb": "github:oada/oada-lib-arangodb",
     "oada-lookup": "^0.4.1",
     "oada-trusted-jws": "^0.1.0",
     "oauth2orize": "^1.0.1",

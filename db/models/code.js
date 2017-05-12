@@ -20,7 +20,7 @@ var URI = require('URIjs');
 var OADAError = require('oada-error');
 var config = require('../../config');
 var path = require('path');
-var db = require(path.join(__dirname,'/../../',config.get('datastores:codes')));
+var db = require(path.join(__dirname,'/../../db',config.get('auth:datastoresDriver'),'codes.js'));
 
 function makeCode(code) {
   code.isValid = function() {
