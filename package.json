@@ -50,6 +50,7 @@
     "oada-client-discovery": "^0.3.2",
     "oada-error": "^1.1.1",
     "oada-lib-arangodb": "github:oada/oada-lib-arangodb",
+    "oada-lib-config": "github:oada/oada-lib-config",
     "oada-lookup": "^0.4.1",
     "oada-trusted-jws": "^0.1.0",
     "oauth2orize": "^1.0.1",

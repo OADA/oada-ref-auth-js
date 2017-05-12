@@ -1,5 +1,5 @@
 const Database  = require('arangojs').Database;
-const config = require('../../config');
+const config = require('oada-lib-config')(require('../../config.defaults.js'));
 const moment = require('moment');
 const _ = require('lodash');
 const expect = require('chai').expect;
