@@ -73,7 +73,7 @@ passport.use(new ClientPassword.Strategy({
         var key_hint = client.jwks_uri || client.jwks;
 
         jwtBearerClientAuth.verify(cSecret, key_hint, cId, cId,
-          URI(config.get('server:publicUri') + config.get('endpoints:token'))
+          URI(config.get('auth:server:publicUri') + config.get('auth:endpoints:token'))
             .normalize()
             .toString(), {},
           function(err, valid) {

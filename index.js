@@ -43,23 +43,23 @@ module.exports = function(conf) {
     config.setObject(conf);
   }
 
-  config.set('server:port', process.env.PORT || config.get('server:port'));
+  config.set('auth:server:port', process.env.PORT || config.get('auth:server:port'));
 
   var publicUri;
-  if(!config.get('server:publicUri')) {
+  if(!config.get('auth:server:publicUri')) {
     publicUri = URI()
-      .hostname(config.get('server:domain'))
-      .port(config.get('server:port'))
-      .protocol(config.get('server:mode'))
+      .hostname(config.get('auth:server:domain'))
+      .port(config.get('auth:server:port'))
+      .protocol(config.get('auth:server:mode'))
       .normalize()
       .toString();
   } else {
-    publicUri = URI(config.get('server:publicUri'))
+    publicUri = URI(config.get('auth:server:publicUri'))
       .normalize()
       .toString();
   }
 
-  config.set('server:publicUri', publicUri);
+  config.set('auth:server:publicUri', publicUri);
 
   // Require these late because they depend on the config
   var dynReg = require('./dynReg');
@@ -69,17 +69,17 @@ module.exports = function(conf) {
   require('./auth');
   var app = express();
 
-  var wkj = config.get('wkj') ? config.get('wkj') : require('well-known-json')();
+  var wkj = config.get('auth:wkj') ? config.get('auth:wkj') : require('well-known-json')();
 
   app.set('view engine', 'ejs');
-  app.set('json spaces', config.get('server:jsonSpaces'));
+  app.set('json spaces', config.get('auth:server:jsonSpaces'));
   app.set('views', path.join(__dirname, 'views'));
 
   app.use(morgan('combined'));
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(session({
-    secret: config.get('server:sessionSecret'),
+    secret: config.get('auth:server:sessionSecret'),
     resave: false,
     saveUninitialized: false
   }));
@@ -97,44 +97,44 @@ module.exports = function(conf) {
   //////
   // UI
   //////
-  if (config.get('oauth2:enable') || config.get('oidc:enable')) {
+  if (config.get('auth:oauth2:enable') || config.get('auth:oidc:enable')) {
     var oauth2 = require('./oauth2')(server,config);
 
-    app.options(config.get('endpoints:register'), require('cors')());
-    app.post(config.get('endpoints:register'),
+    app.options(config.get('auth:endpoints:register'), require('cors')());
+    app.post(config.get('auth:endpoints:register'),
         require('cors')(), bodyParser.json(), dynReg);
 
-    app.get(config.get('endpoints:authorize'), function(req, res, done) {
-      trace('GET '+config.get('endpoints:authorize')+': setting X-Frame-Options=SAMEORIGIN before oauth2.authorize');
+    app.get(config.get('auth:endpoints:authorize'), function(req, res, done) {
+      trace('GET '+config.get('auth:endpoints:authorize')+': setting X-Frame-Options=SAMEORIGIN before oauth2.authorize');
       res.header('X-Frame-Options', 'SAMEORIGIN');
       return done();
     }, oauth2.authorize);
-    app.post(config.get('endpoints:decision'), oauth2.decision);
-    app.post(config.get('endpoints:token'), oauth2.token);
+    app.post(config.get('auth:endpoints:decision'), oauth2.decision);
+    app.post(config.get('auth:endpoints:token'), oauth2.token);
 
-    app.get(config.get('endpoints:login'), function(req, res) {
-      trace('GET '+config.get('endpoints:login')+': setting X-Frame-Options=SAMEORIGIN before rendering login');
+    app.get(config.get('auth:endpoints:login'), function(req, res) {
+      trace('GET '+config.get('auth:endpoints:login')+': setting X-Frame-Options=SAMEORIGIN before rendering login');
       res.header('X-Frame-Options', 'SAMEORIGIN');
       res.render('login', {
-        hint: config.get('hint'),
-        logo_url: config.get('endpointsPrefix')+'/oada-logo.png',
-        login_url: config.get('endpoints:login'),
+        hint: config.get('auth:hint'),
+        logo_url: config.get('auth:endpointsPrefix')+'/oada-logo.png',
+        login_url: config.get('auth:endpoints:login'),
       });
     });
 
-    const pfx = config.get('endpointsPrefix') || '';
-    app.post(config.get('endpoints:login'), passport.authenticate('local', {
+    const pfx = config.get('auth:endpointsPrefix') || '';
+    app.post(config.get('auth:endpoints:login'), passport.authenticate('local', {
       successReturnToOrRedirect: '/' + pfx,
-      failureRedirect: config.get('endpoints:login'),
+      failureRedirect: config.get('auth:endpoints:login'),
     }));
 
-    app.get(config.get('endpoints:logout'), function(req, res) {
+    app.get(config.get('auth:endpoints:logout'), function(req, res) {
       req.logout();
       res.redirect(req.get('Referrer'));
     });
 
-    if (config.get('endpointsPrefix'))
-      app.use(config.get('endpointsPrefix'), express.static(path.join(__dirname, 'public')));
+    if (config.get('auth:endpointsPrefix'))
+      app.use(config.get('auth:endpointsPrefix'), express.static(path.join(__dirname, 'public')));
     else
       app.use(express.static(path.join(__dirname, 'public')));
   }
@@ -142,11 +142,11 @@ module.exports = function(conf) {
   //////
   // OAuth 2.0
   //////
-  if (config.get('oauth2:enable')) {
+  if (config.get('auth:oauth2:enable')) {
     wkj.addResource('oada-configuration', {
-      'authorization_endpoint': './' + config.get('endpoints:authorize'),
-      'token_endpoint': './' + config.get('endpoints:token'),
-      'registration_endpoint': './' + config.get('endpoints:register'),
+      'authorization_endpoint': './' + config.get('auth:endpoints:authorize'),
+      'token_endpoint': './' + config.get('auth:endpoints:token'),
+      'registration_endpoint': './' + config.get('auth:endpoints:register'),
       'token_endpoint_auth_signing_alg_values_supported': [
         'RS256',
       ],
@@ -156,16 +156,16 @@ module.exports = function(conf) {
   //////
   // OIDC
   //////
-  if (config.get('oidc:enable')) {
+  if (config.get('auth:oidc:enable')) {
     require('./oidc')(server);
 
-    app.options(config.get('endpoints:certs'), require('cors')());
-    app.get(config.get('endpoints:certs'), require('cors')(), function(req, res) {
+    app.options(config.get('auth:endpoints:certs'), require('cors')());
+    app.get(config.get('auth:endpoints:certs'), require('cors')(), function(req, res) {
       res.json(keys.jwks);
     });
 
-    app.options(config.get('endpoints:userinfo'), require('cors')());
-    app.get(config.get('endpoints:userinfo'), require('cors')(),
+    app.options(config.get('auth:endpoints:userinfo'), require('cors')());
+    app.get(config.get('auth:endpoints:userinfo'), require('cors')(),
         passport.authenticate('bearer', {session:false}),
         function(req, res) {
 
@@ -179,12 +179,12 @@ module.exports = function(conf) {
     });
 
     wkj.addResource('openid-configuration', {
-      'issuer': config.get('server:publicUri'),
-      'registration_endpoint': './' + config.get('endpoints:register'),
-      'authorization_endpoint': './' + config.get('endpoints:authorize'),
-      'token_endpoint': './' + config.get('endpoints:token'),
-      'userinfo_endpoint': './' + config.get('endpoints:userinfo'),
-      'jwks_uri': './' + config.get('endpoints:certs'),
+      'issuer': config.get('auth:server:publicUri'),
+      'registration_endpoint': './' + config.get('auth:endpoints:register'),
+      'authorization_endpoint': './' + config.get('auth:endpoints:authorize'),
+      'token_endpoint': './' + config.get('auth:endpoints:token'),
+      'userinfo_endpoint': './' + config.get('auth:endpoints:userinfo'),
+      'jwks_uri': './' + config.get('auth:endpoints:certs'),
       'response_types_supported': [
         'code',
         'token',
@@ -212,7 +212,7 @@ module.exports = function(conf) {
   /////
   // .well-known
   /////
-  if (!config.get('wkj')) {
+  if (!config.get('auth:wkj')) {
     app.use(wkj);
   }
 
@@ -227,13 +227,13 @@ module.exports = function(conf) {
 if (require.main === module) {
   var app = module.exports();
   var server;
-  if (config.get('server:mode') === 'http') {
-    var server = app.listen(config.get('server:port'), function() {
+  if (config.get('auth:server:mode') === 'http') {
+    var server = app.listen(config.get('auth:server:port'), function() {
       console.log('Listening HTTP on port %d', server.address().port);
     });
   } else {
-    var server = https.createServer(config.get('certs'), app);
-    server.listen(config.get('server:port'), function() {
+    var server = https.createServer(config.get('auth:certs'), app);
+    server.listen(config.get('auth:server:port'), function() {
       console.log('Listening HTTPS on port %d', server.address().port);
     });
   }

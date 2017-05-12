@@ -37,7 +37,7 @@ function makeHash(length) {
 function createIdToken(aud, user, nonce, userinfoScope) {
   userinfoScope = userinfoScope || [];
 
-  var idToken = config.get('idToken');
+  var idToken = config.get('auth:idToken');
   var options = {
     header: {
       kid: idToken.signKid
@@ -46,7 +46,7 @@ function createIdToken(aud, user, nonce, userinfoScope) {
     expiresInMinutes: idToken.expiresIn / 60,
     audience: aud,
     subject: user.id,
-    issuer: config.get('server:publicUri')
+    issuer: config.get('auth:server:publicUri')
   };
 
   var payload = {
@@ -69,7 +69,7 @@ function createIdToken(aud, user, nonce, userinfoScope) {
 }
 
 function createToken(scope, user, clientId, done) {
-  var token = config.get('token');
+  var token = config.get('auth:token');
   var tok = {
     token: makeHash(token.length),
     expiresIn: token.expiresIn,
@@ -149,7 +149,7 @@ function issueIdToken(client, user, ares, done) {
 }
 
 function issueCode(client, redirectUri, user, ares, done) {
-  var code = config.get('code');
+  var code = config.get('auth:code');
   var c = {
     code: makeHash(code.length),
     expiresIn: code.expiresIn,
