@@ -18,9 +18,20 @@
 // so set isLibrary in global scope before requiring.
 global.isLibrary = !(require.main === module);
 
+var _ = require('lodash');
+var trace = require('debug')('auth#index:trace');
 var config = require('./config');
-
-var trace = require('debug')('index/trace');
+// If there is an endpointsPrefix, update all the endpoints to include the
+// prefix before doing anything else
+const pfx = config.get('auth:endpointsPrefix');
+if (typeof pfx === 'string') {
+  trace('Adding supplied prefix '+pfx+' to all endpoints');
+  const endpoints = config.get('auth:endpoints');
+  _.mapValues(endpoints, (v,k) => {
+    config.set('auth:endpoints:'+k, pfx+v);
+  });
+}
+trace('Using config = ', config.get('auth'));
 
 var path = require('path');
 var https = require('https');

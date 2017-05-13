@@ -32,7 +32,7 @@ function dynReg(req, res, done) {
   }
 
   trustedJws(req.body.software_statement, {
-    timeout: config.get('dynamicRegistration:trustedListLookupTimeout')
+    timeout: config.get('auth:dynamicRegistration:trustedListLookupTimeout')
   }).spread(function(trusted, metadata) {
       metadata.trusted = trusted;
 

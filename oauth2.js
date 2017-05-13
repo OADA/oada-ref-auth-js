@@ -44,7 +44,7 @@ module.exports = function(_server,config) {
   //////
   return {
     authorize: [
-      login.ensureLoggedIn(config.get('endpoints:login')),
+      login.ensureLoggedIn(config.get('auth:endpoints:login')),
       server.authorization(function(clientId, redirectURI, done) {
         clients.findById(clientId, function(err, client) {
           if (err) { return done(err); }
@@ -67,15 +67,15 @@ module.exports = function(_server,config) {
             scope: req.oauth2.req.scope,
             nonce: req.oauth2.req.nonce,
             trusted: req.oauth2.client.trusted,
-            logo_url: config.get('endpointsPrefix')+'/oada-logo.png',
-            decision_url: config.get('endpoints:decision'),
+            logo_url: config.get('auth:endpointsPrefix')+'/oada-logo.png',
+            decision_url: config.get('auth:endpoints:decision'),
           });
         });
       },
       server.errorHandler({mode: 'indirect'})
     ],
     decision: [
-      login.ensureLoggedIn(config.get('endpoints:login')),
+      login.ensureLoggedIn(config.get('auth:endpoints:login')),
       server.decision(function parseDecision(req, done) {
         var validScope = req.body.scope.every(function(el) {
           return (req.oauth2.req.scope.indexOf(el) != -1);
