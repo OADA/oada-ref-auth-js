@@ -19,7 +19,7 @@ var uuid = require('uuid');
 var config = require('../../config');
 var debug = require('debug')('info');
 var path = require('path');
-var db = require(path.join(__dirname,'/../../db',config.get('auth:datastoresDriver'),'tokens.js'));
+var db = require(path.join(__dirname,'/../../db',config.get('auth:datastoresDriver'),'clients.js'));
 
 function makeClient(client) {
   // No model needed (yet)
